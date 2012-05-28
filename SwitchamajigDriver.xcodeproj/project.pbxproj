@@ -1,0 +1,403 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
+		AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */; };
+		AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0491573055500D0BC98 /* SenTestingKit.framework */; };
+		AD8CF04C1573055500D0BC98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF04B1573055500D0BC98 /* UIKit.framework */; };
+		AD8CF04D1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
+		AD8CF0501573055500D0BC98 /* libSwitchamajigDriver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */; };
+		AD8CF0561573055500D0BC98 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD8CF0541573055500D0BC98 /* InfoPlist.strings */; };
+		AD8CF0591573055500D0BC98 /* SwitchamajigDriverTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0581573055500D0BC98 /* SwitchamajigDriverTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AD8CF04E1573055500D0BC98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD8CF02F1573055500D0BC98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AD8CF0371573055500D0BC98;
+			remoteInfo = SwitchamajigDriver;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwitchamajigDriver.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD8CF03B1573055500D0BC98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
+		AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */ = {isa = PBXFileReference; path = SwitchamajigDriver.h; sourceTree = "<group>"; };
+		AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigDriver.m; sourceTree = "<group>"; };
+		AD8CF0481573055500D0BC98 /* SwitchamajigDriverTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwitchamajigDriverTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD8CF0491573055500D0BC98 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		AD8CF04B1573055500D0BC98 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		AD8CF0531573055500D0BC98 /* SwitchamajigDriverTests-Info.plist */ = {isa = PBXFileReference; path = "SwitchamajigDriverTests-Info.plist"; sourceTree = "<group>"; };
+		AD8CF0551573055500D0BC98 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AD8CF0571573055500D0BC98 /* SwitchamajigDriverTests.h */ = {isa = PBXFileReference; path = SwitchamajigDriverTests.h; sourceTree = "<group>"; };
+		AD8CF0581573055500D0BC98 /* SwitchamajigDriverTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigDriverTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		AD8CF0351573055500D0BC98 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD8CF0441573055500D0BC98 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */,
+				AD8CF04C1573055500D0BC98 /* UIKit.framework in Frameworks */,
+				AD8CF04D1573055500D0BC98 /* Foundation.framework in Frameworks */,
+				AD8CF0501573055500D0BC98 /* libSwitchamajigDriver.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AD8CF02D1573055500D0BC98 = {
+			isa = PBXGroup;
+			children = (
+				AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */,
+				AD8CF0511573055500D0BC98 /* SwitchamajigDriverTests */,
+				AD8CF03A1573055500D0BC98 /* Frameworks */,
+				AD8CF0391573055500D0BC98 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		AD8CF0391573055500D0BC98 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */,
+				AD8CF0481573055500D0BC98 /* SwitchamajigDriverTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD8CF03A1573055500D0BC98 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF03B1573055500D0BC98 /* Foundation.framework */,
+				AD8CF0491573055500D0BC98 /* SenTestingKit.framework */,
+				AD8CF04B1573055500D0BC98 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */,
+				AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */,
+				AD8CF03E1573055500D0BC98 /* Supporting Files */,
+			);
+			path = SwitchamajigDriver;
+			sourceTree = "<group>";
+		};
+		AD8CF03E1573055500D0BC98 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AD8CF0511573055500D0BC98 /* SwitchamajigDriverTests */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF0571573055500D0BC98 /* SwitchamajigDriverTests.h */,
+				AD8CF0581573055500D0BC98 /* SwitchamajigDriverTests.m */,
+				AD8CF0521573055500D0BC98 /* Supporting Files */,
+			);
+			path = SwitchamajigDriverTests;
+			sourceTree = "<group>";
+		};
+		AD8CF0521573055500D0BC98 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				AD8CF0531573055500D0BC98 /* SwitchamajigDriverTests-Info.plist */,
+				AD8CF0541573055500D0BC98 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		AD8CF0361573055500D0BC98 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		AD8CF0371573055500D0BC98 /* SwitchamajigDriver */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD8CF05C1573055500D0BC98 /* Build configuration list for PBXNativeTarget "SwitchamajigDriver" */;
+			buildPhases = (
+				AD8CF0341573055500D0BC98 /* Sources */,
+				AD8CF0351573055500D0BC98 /* Frameworks */,
+				AD8CF0361573055500D0BC98 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SwitchamajigDriver;
+			productName = SwitchamajigDriver;
+			productReference = AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		AD8CF0471573055500D0BC98 /* SwitchamajigDriverTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AD8CF05F1573055500D0BC98 /* Build configuration list for PBXNativeTarget "SwitchamajigDriverTests" */;
+			buildPhases = (
+				AD8CF0431573055500D0BC98 /* Sources */,
+				AD8CF0441573055500D0BC98 /* Frameworks */,
+				AD8CF0451573055500D0BC98 /* Resources */,
+				AD8CF0461573055500D0BC98 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AD8CF04F1573055500D0BC98 /* PBXTargetDependency */,
+			);
+			name = SwitchamajigDriverTests;
+			productName = SwitchamajigDriverTests;
+			productReference = AD8CF0481573055500D0BC98 /* SwitchamajigDriverTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		AD8CF02F1573055500D0BC98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+				ORGANIZATIONNAME = "PAW Solutions";
+			};
+			buildConfigurationList = AD8CF0321573055500D0BC98 /* Build configuration list for PBXProject "SwitchamajigDriver" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = AD8CF02D1573055500D0BC98;
+			productRefGroup = AD8CF0391573055500D0BC98 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AD8CF0371573055500D0BC98 /* SwitchamajigDriver */,
+				AD8CF0471573055500D0BC98 /* SwitchamajigDriverTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		AD8CF0451573055500D0BC98 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD8CF0561573055500D0BC98 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AD8CF0461573055500D0BC98 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AD8CF0341573055500D0BC98 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AD8CF0431573055500D0BC98 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AD8CF0591573055500D0BC98 /* SwitchamajigDriverTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AD8CF04F1573055500D0BC98 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AD8CF0371573055500D0BC98 /* SwitchamajigDriver */;
+			targetProxy = AD8CF04E1573055500D0BC98 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		AD8CF0541573055500D0BC98 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				AD8CF0551573055500D0BC98 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		AD8CF05A1573055500D0BC98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		AD8CF05B1573055500D0BC98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		AD8CF05D1573055500D0BC98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/SwitchamajigDriver.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		AD8CF05E1573055500D0BC98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/SwitchamajigDriver.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		AD8CF0601573055500D0BC98 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				INFOPLIST_FILE = "SwitchamajigDriverTests/SwitchamajigDriverTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		AD8CF0611573055500D0BC98 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				INFOPLIST_FILE = "SwitchamajigDriverTests/SwitchamajigDriverTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AD8CF0321573055500D0BC98 /* Build configuration list for PBXProject "SwitchamajigDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD8CF05A1573055500D0BC98 /* Debug */,
+				AD8CF05B1573055500D0BC98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AD8CF05C1573055500D0BC98 /* Build configuration list for PBXNativeTarget "SwitchamajigDriver" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD8CF05D1573055500D0BC98 /* Debug */,
+				AD8CF05E1573055500D0BC98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		AD8CF05F1573055500D0BC98 /* Build configuration list for PBXNativeTarget "SwitchamajigDriverTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AD8CF0601573055500D0BC98 /* Debug */,
+				AD8CF0611573055500D0BC98 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AD8CF02F1573055500D0BC98 /* Project object */;
+}
