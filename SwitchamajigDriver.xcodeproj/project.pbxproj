@@ -10,11 +10,19 @@
 		AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
 		AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */; };
 		AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0491573055500D0BC98 /* SenTestingKit.framework */; };
-		AD8CF04C1573055500D0BC98 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF04B1573055500D0BC98 /* UIKit.framework */; };
 		AD8CF04D1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
 		AD8CF0501573055500D0BC98 /* libSwitchamajigDriver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */; };
 		AD8CF0561573055500D0BC98 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AD8CF0541573055500D0BC98 /* InfoPlist.strings */; };
 		AD8CF0591573055500D0BC98 /* SwitchamajigDriverTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0581573055500D0BC98 /* SwitchamajigDriverTests.m */; };
+		AD921AE015773B3A00940981 /* SwitchamajigControllerDeviceDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD921ADE15773B3A00940981 /* SwitchamajigControllerDeviceDriver.m */; };
+		AD921AE115773B3A00940981 /* SwitchamajigControllerDeviceDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = AD921ADF15773B3A00940981 /* SwitchamajigControllerDeviceDriver.h */; };
+		AD921AE9157899B800940981 /* GCDAsyncSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = AD921AE7157899B800940981 /* GCDAsyncSocket.h */; };
+		AD921AEA157899B800940981 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = AD921AE8157899B800940981 /* GCDAsyncSocket.m */; };
+		AD921AEC15792DAA00940981 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AEB15792DA900940981 /* CFNetwork.framework */; };
+		AD921AF015792EE900940981 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AEB15792DA900940981 /* CFNetwork.framework */; };
+		AD921AF115792EF900940981 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AEE15792EC500940981 /* Security.framework */; };
+		AD921AF5157933F200940981 /* libKissXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AF4157933F200940981 /* libKissXML.a */; };
+		AD921AF71579342800940981 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AF61579342800940981 /* libxml2.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,16 +38,24 @@
 /* Begin PBXFileReference section */
 		AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwitchamajigDriver.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8CF03B1573055500D0BC98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
-		AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */ = {isa = PBXFileReference; path = SwitchamajigDriver.h; sourceTree = "<group>"; };
+		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
+		AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwitchamajigDriver.h; sourceTree = "<group>"; };
 		AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigDriver.m; sourceTree = "<group>"; };
 		AD8CF0481573055500D0BC98 /* SwitchamajigDriverTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwitchamajigDriverTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8CF0491573055500D0BC98 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		AD8CF04B1573055500D0BC98 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		AD8CF0531573055500D0BC98 /* SwitchamajigDriverTests-Info.plist */ = {isa = PBXFileReference; path = "SwitchamajigDriverTests-Info.plist"; sourceTree = "<group>"; };
+		AD8CF0531573055500D0BC98 /* SwitchamajigDriverTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "SwitchamajigDriverTests-Info.plist"; sourceTree = "<group>"; };
 		AD8CF0551573055500D0BC98 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		AD8CF0571573055500D0BC98 /* SwitchamajigDriverTests.h */ = {isa = PBXFileReference; path = SwitchamajigDriverTests.h; sourceTree = "<group>"; };
+		AD8CF0571573055500D0BC98 /* SwitchamajigDriverTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwitchamajigDriverTests.h; sourceTree = "<group>"; };
 		AD8CF0581573055500D0BC98 /* SwitchamajigDriverTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigDriverTests.m; sourceTree = "<group>"; };
+		AD921ADE15773B3A00940981 /* SwitchamajigControllerDeviceDriver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigControllerDeviceDriver.m; sourceTree = "<group>"; };
+		AD921ADF15773B3A00940981 /* SwitchamajigControllerDeviceDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchamajigControllerDeviceDriver.h; sourceTree = "<group>"; };
+		AD921AE7157899B800940981 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncSocket.h; path = CocoaAsyncSocket/GCD/GCDAsyncSocket.h; sourceTree = "<group>"; };
+		AD921AE8157899B800940981 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncSocket.m; path = CocoaAsyncSocket/GCD/GCDAsyncSocket.m; sourceTree = "<group>"; };
+		AD921AEB15792DA900940981 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		AD921AEE15792EC500940981 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		AD921AF4157933F200940981 /* libKissXML.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libKissXML.a; path = "../KissXML/build/Release-iphoneos/libKissXML.a"; sourceTree = "<group>"; };
+		AD921AF61579342800940981 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD921AEC15792DAA00940981 /* CFNetwork.framework in Frameworks */,
 				AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -55,8 +72,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD921AF71579342800940981 /* libxml2.dylib in Frameworks */,
+				AD921AF5157933F200940981 /* libKissXML.a in Frameworks */,
+				AD921AF115792EF900940981 /* Security.framework in Frameworks */,
+				AD921AF015792EE900940981 /* CFNetwork.framework in Frameworks */,
 				AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */,
-				AD8CF04C1573055500D0BC98 /* UIKit.framework in Frameworks */,
 				AD8CF04D1573055500D0BC98 /* Foundation.framework in Frameworks */,
 				AD8CF0501573055500D0BC98 /* libSwitchamajigDriver.a in Frameworks */,
 			);
@@ -68,6 +88,10 @@
 		AD8CF02D1573055500D0BC98 = {
 			isa = PBXGroup;
 			children = (
+				AD921AF61579342800940981 /* libxml2.dylib */,
+				AD921AF4157933F200940981 /* libKissXML.a */,
+				AD921AEE15792EC500940981 /* Security.framework */,
+				AD921AEB15792DA900940981 /* CFNetwork.framework */,
 				AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */,
 				AD8CF0511573055500D0BC98 /* SwitchamajigDriverTests */,
 				AD8CF03A1573055500D0BC98 /* Frameworks */,
@@ -97,6 +121,10 @@
 		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
 			isa = PBXGroup;
 			children = (
+				AD921AE7157899B800940981 /* GCDAsyncSocket.h */,
+				AD921AE8157899B800940981 /* GCDAsyncSocket.m */,
+				AD921ADE15773B3A00940981 /* SwitchamajigControllerDeviceDriver.m */,
+				AD921ADF15773B3A00940981 /* SwitchamajigControllerDeviceDriver.h */,
 				AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */,
 				AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */,
 				AD8CF03E1573055500D0BC98 /* Supporting Files */,
@@ -138,6 +166,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD921AE115773B3A00940981 /* SwitchamajigControllerDeviceDriver.h in Headers */,
+				AD921AE9157899B800940981 /* GCDAsyncSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,6 +270,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */,
+				AD921AE015773B3A00940981 /* SwitchamajigControllerDeviceDriver.m in Sources */,
+				AD921AEA157899B800940981 /* GCDAsyncSocket.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,6 +353,7 @@
 				DSTROOT = /tmp/SwitchamajigDriver.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/include/libxml2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -333,6 +366,7 @@
 				DSTROOT = /tmp/SwitchamajigDriver.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/include/libxml2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -348,7 +382,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/include/libxml2;
 				INFOPLIST_FILE = "SwitchamajigDriverTests/SwitchamajigDriverTests-Info.plist";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -363,7 +399,9 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SwitchamajigDriver/SwitchamajigDriver-Prefix.pch";
+				"HEADER_SEARCH_PATHS[arch=*]" = /usr/include/libxml2;
 				INFOPLIST_FILE = "SwitchamajigDriverTests/SwitchamajigDriverTests-Info.plist";
+				"OTHER_LDFLAGS[arch=*]" = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
 			};
@@ -388,6 +426,7 @@
 				AD8CF05E1573055500D0BC98 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AD8CF05F1573055500D0BC98 /* Build configuration list for PBXNativeTarget "SwitchamajigDriverTests" */ = {
 			isa = XCConfigurationList;
@@ -396,6 +435,7 @@
 				AD8CF0611573055500D0BC98 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
