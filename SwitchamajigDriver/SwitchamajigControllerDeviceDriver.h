@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SwitchamajigDriver.h"
-#import "../../KissXML/KissXML/DDXMLDocument.h"
 #import "GCDAsyncSocket.h"
 #import "GCDAsyncUdpSocket.h"
 
@@ -19,9 +18,6 @@
     GCDAsyncSocket *asyncSocket;
 }
 
-- (id) initWithHostname:(NSString *)hostName;
-- (void) setDelegate:(id)delegate;
-- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode;
 - (void) sendSwitchState;
 
 @property (nonatomic, strong) NSString *hostName;
@@ -32,8 +28,6 @@
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
     id <SwitchamajigDeviceListenerDelegate> delegate;
 }
-
-- (id) initWithDelegate:(id)delegate_init;
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
 

@@ -9,9 +9,22 @@
 #import "SwitchamajigDriver.h"
 
 @implementation SwitchamajigDriver
+- (id) initWithHostname:(NSString *)hostName {
+    return nil;
+}
 
+- (void) setDelegate:(id)delegate {
+    
+}
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode {
+    
+}
 @end
 
+
 @implementation SwitchamajigListener
+- (id) initWithDelegate:(id)delegate_init {
+    return nil;
+}
 
 @end

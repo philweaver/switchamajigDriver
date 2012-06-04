@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "../../KissXML/KissXML/DDXMLDocument.h"
 
 @protocol SwitchamajigDeviceDriverDelegate <NSObject> 
 - (void) SwitchamajigDeviceDriverConnected:(id)deviceDriver;
@@ -20,9 +21,12 @@
 @end
 
 @interface SwitchamajigDriver : NSObject
-
+- (id) initWithHostname:(NSString *)hostName;
+- (void) setDelegate:(id)delegate;
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode;
 @end
 
 @interface SwitchamajigListener : NSObject
+- (id) initWithDelegate:(id)delegate_init;
 
 @end
