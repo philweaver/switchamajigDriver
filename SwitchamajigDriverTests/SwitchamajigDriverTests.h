@@ -7,7 +7,9 @@
 //
 
 #import <SenTestingKit/SenTestingKit.h>
+#import "SwitchamajigDriver.h"
 
-@interface SwitchamajigDriverTests : SenTestCase
+@interface SwitchamajigDriverTests : SenTestCase <SwitchamajigDeviceListenerDelegate, SwitchamajigDeviceDriverDelegate> {
+}
 
 @end

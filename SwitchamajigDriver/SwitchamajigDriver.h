@@ -8,6 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol SwitchamajigDeviceDriverDelegate <NSObject> 
+- (void) SwitchamajigDeviceDriverConnected:(id)deviceDriver;
+- (void) SwitchamajigDeviceDriverDisconnected:(id)deviceDriver withError:(NSError*)error;
+@end
+
+@protocol SwitchamajigDeviceListenerDelegate <NSObject> 
+- (void) SwitchamajigDeviceListenerFoundDevice:(id)listener hostname:(NSString*)hostname friendlyname:(NSString*)friendlyname;
+- (void) SwitchamajigDeviceListenerHandleError:(id)listener theError:(NSError*)error;
+- (void) SwitchamajigDeviceListenerHandleBatteryWarning:(id)listener hostname:(NSString*)hostname friendlyname:(NSString*)friendlyname;
+@end
+
 @interface SwitchamajigDriver : NSObject
+
+@end
+
+@interface SwitchamajigListener : NSObject
 
 @end

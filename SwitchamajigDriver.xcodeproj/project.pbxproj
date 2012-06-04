@@ -23,6 +23,9 @@
 		AD921AF115792EF900940981 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AEE15792EC500940981 /* Security.framework */; };
 		AD921AF5157933F200940981 /* libKissXML.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AF4157933F200940981 /* libKissXML.a */; };
 		AD921AF71579342800940981 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AF61579342800940981 /* libxml2.dylib */; };
+		AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */; };
+		AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */; };
+		AD921AFF157C992100940981 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AFE157C992100940981 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,9 @@
 		AD921AEE15792EC500940981 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AD921AF4157933F200940981 /* libKissXML.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libKissXML.a; path = "../KissXML/build/Release-iphoneos/libKissXML.a"; sourceTree = "<group>"; };
 		AD921AF61579342800940981 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncUdpSocket.h; path = CocoaAsyncSocket/GCD/GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
+		AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncUdpSocket.m; path = CocoaAsyncSocket/GCD/GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
+		AD921AFE157C992100940981 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD921AFF157C992100940981 /* UIKit.framework in Frameworks */,
 				AD921AF71579342800940981 /* libxml2.dylib in Frameworks */,
 				AD921AF5157933F200940981 /* libKissXML.a in Frameworks */,
 				AD921AF115792EF900940981 /* Security.framework in Frameworks */,
@@ -88,6 +95,7 @@
 		AD8CF02D1573055500D0BC98 = {
 			isa = PBXGroup;
 			children = (
+				AD921AFE157C992100940981 /* UIKit.framework */,
 				AD921AF61579342800940981 /* libxml2.dylib */,
 				AD921AF4157933F200940981 /* libKissXML.a */,
 				AD921AEE15792EC500940981 /* Security.framework */,
@@ -121,6 +129,8 @@
 		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
 			isa = PBXGroup;
 			children = (
+				AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */,
+				AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */,
 				AD921AE7157899B800940981 /* GCDAsyncSocket.h */,
 				AD921AE8157899B800940981 /* GCDAsyncSocket.m */,
 				AD921ADE15773B3A00940981 /* SwitchamajigControllerDeviceDriver.m */,
@@ -168,6 +178,7 @@
 			files = (
 				AD921AE115773B3A00940981 /* SwitchamajigControllerDeviceDriver.h in Headers */,
 				AD921AE9157899B800940981 /* GCDAsyncSocket.h in Headers */,
+				AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,6 +283,7 @@
 				AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */,
 				AD921AE015773B3A00940981 /* SwitchamajigControllerDeviceDriver.m in Sources */,
 				AD921AEA157899B800940981 /* GCDAsyncSocket.m in Sources */,
+				AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

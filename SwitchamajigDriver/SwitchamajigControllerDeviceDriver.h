@@ -10,20 +10,13 @@
 #import "SwitchamajigDriver.h"
 #import "../../KissXML/KissXML/DDXMLDocument.h"
 #import "GCDAsyncSocket.h"
-enum SwitchamajigDeviceDriverNotification {
-    SWITCHAMAJIG_AVAILABLE = 1,
-    SWITCHAMAJIG_UNAVAILABLE = 2
-    };
+#import "GCDAsyncUdpSocket.h"
 
-@protocol SwitchamajigDeviceDriverDelegate <NSObject> 
-- (void) switchamajigDeviceDriverHandleEvents:(id)deviceDriver notification:(enum SwitchamajigDeviceDriverNotification)notification;
-@end
 
 @interface SwitchamajigControllerDeviceDriver : SwitchamajigDriver {
     id <SwitchamajigDeviceDriverDelegate> delegate;
     int switchState;
     GCDAsyncSocket *asyncSocket;
-    
 }
 
 - (id) initWithHostname:(NSString *)hostName;
@@ -35,6 +28,18 @@ enum SwitchamajigDeviceDriverNotification {
 @property (nonatomic, strong) NSString *friendlyName;
 @end
 
+
+@interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
+    id <SwitchamajigDeviceListenerDelegate> delegate;
+}
+
+- (id) initWithDelegate:(id)delegate_init;
+
+@property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;
+
+@end
+
+
 @interface SimulatedSwitchamajigController : NSObject <NSStreamDelegate> {
     NSInputStream *inputStream;
     GCDAsyncSocket *listenSocket;
@@ -43,6 +48,8 @@ enum SwitchamajigDeviceDriverNotification {
 - (void) startListening;
 - (void) stopListening;
 - (int) getSwitchState;
+- (void) sendHeartbeat:(char *)friendlyName batteryVoltageInmV:(int)batteryVoltageInmV;
 
 @property (strong) GCDAsyncSocket *connectedSocket;
+@property (strong) GCDAsyncUdpSocket *sendSocket;
 @end

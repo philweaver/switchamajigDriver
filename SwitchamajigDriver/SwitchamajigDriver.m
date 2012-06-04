@@ -11,3 +11,7 @@
 @implementation SwitchamajigDriver
 
 @end
+
+@implementation SwitchamajigListener
+
+@end
