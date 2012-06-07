@@ -12,7 +12,7 @@
 #import "GCDAsyncUdpSocket.h"
 
 
-@interface SwitchamajigControllerDeviceDriver : SwitchamajigDriver {
+@interface SwitchamajigControllerDeviceDriver () {
     id <SwitchamajigDeviceDriverDelegate> delegate;
     int switchState;
     GCDAsyncSocket *asyncSocket;
@@ -25,7 +25,7 @@
 @end
 
 
-@interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
+@interface SwitchamajigControllerDeviceListener () {
     id <SwitchamajigDeviceListenerDelegate> delegate;
 }
 

@@ -30,3 +30,14 @@
 - (id) initWithDelegate:(id)delegate_init;
 
 @end
+
+@interface SwitchamajigControllerDeviceDriver : SwitchamajigDriver {
+}
+
+@end
+
+@interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
+
+}
+
+@end
