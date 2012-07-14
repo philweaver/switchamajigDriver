@@ -54,7 +54,8 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
     if(!xmlCommandDoc) {
         NSLog(@"Failed to create xml doc for turnSwitchesOn: %@", err);
     }
-    [driver issueCommandFromXMLNode:xmlCommandDoc];
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode];
     // Wait for command
     oneSecondFromNow = [NSDate dateWithTimeIntervalSinceNow:1.0];
     [[NSRunLoop currentRunLoop] runUntilDate:oneSecondFromNow];
@@ -66,7 +67,8 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
     if(!xmlCommandDoc) {
         NSLog(@"Failed to create xml doc for turnSwitchesOff: %@", err);
     }
-    [driver issueCommandFromXMLNode:xmlCommandDoc];
+    commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode];
     oneSecondFromNow = [NSDate dateWithTimeIntervalSinceNow:1.0];
     [[NSRunLoop currentRunLoop] runUntilDate:oneSecondFromNow];
     switchState = [controller getSwitchState];
@@ -139,7 +141,8 @@ bool listenerErrorReceieved;
     if(!xmlCommandDoc) {
         NSLog(@"Failed to create xml doc for turnSwitchesOn: %@", err);
     }
-    [driver issueCommandFromXMLNode:xmlCommandDoc];
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode];
     // Wait for command
     oneSecondFromNow = [NSDate dateWithTimeIntervalSinceNow:1.0];
     [[NSRunLoop currentRunLoop] runUntilDate:oneSecondFromNow];

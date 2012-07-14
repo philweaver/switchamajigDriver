@@ -34,13 +34,9 @@
 
 // Send command specified in XML
 - (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode {
-    NSError *xmlError=nil;
-    NSArray *switchOnNodes = [xmlCommandNode nodesForXPath:@".//turnSwitchesOn" error:&xmlError];
-    NSArray *switchOffNodes = [xmlCommandNode nodesForXPath:@".//turnSwitchesOff" error:&xmlError];
-    //NSArray *sequenceNodes = [xmlCommandNode nodesForXPath:@".//switchsequence" error:&xmlError];
-    if([switchOnNodes count]) {
-        DDXMLNode *switchOnNode = [switchOnNodes objectAtIndex:0];
-        NSString *switchOnString = [switchOnNode stringValue];
+    NSString *command = [xmlCommandNode name];
+    if([command isEqualToString:@"turnSwitchesOn"]) {
+        NSString *switchOnString = [xmlCommandNode stringValue];
         NSScanner *switchOnScan = [[NSScanner alloc] initWithString:switchOnString];
         int switchNumber;
         while([switchOnScan scanInt:&switchNumber]) {
@@ -48,11 +44,8 @@
                 switchState |= 1 << (switchNumber-1);
             }
         }
-    }
-           
-    if([switchOffNodes count]) {
-        DDXMLNode *switchOffNode = [switchOffNodes objectAtIndex:0];
-        NSString *switchOffString = [switchOffNode stringValue];
+    } else if([command isEqualToString:@"turnSwitchesOff"]) {
+        NSString *switchOffString = [xmlCommandNode stringValue];
         NSScanner *switchOffScan = [[NSScanner alloc] initWithString:switchOffString];
         int switchNumber;
         while([switchOffScan scanInt:&switchNumber]) {
@@ -185,6 +178,10 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
     const unsigned char *packet = [data bytes];
+    int datalen = [data length];
+    if(datalen != 8) {
+        NSLog(@"Simulated Switchamajig Controller received packet of %d bytes. Ignoring.", datalen);
+    }
     if((packet[0] == SWITCHAMAJIG_PACKET_BYTE_0) && (packet[1] == SWITCHAMAJIG_CMD_SET_RELAY))  {
         int newSwitchState = packet[2] & 0x0f;
         newSwitchState |= (packet[3] & 0x0f) << 4;
