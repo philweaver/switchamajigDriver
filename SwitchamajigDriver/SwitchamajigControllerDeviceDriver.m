@@ -114,6 +114,8 @@
     // Set up UDP socket
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
 	[self setUdpSocket:[[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:mainQueue]];
+    [[self udpSocket] setIPv4Enabled:YES];
+    [[self udpSocket] setIPv6Enabled:NO];
     NSError *error;
     if(![[self udpSocket] bindToPort:ROVING_LISTENPORT error:&error]) {
         NSLog(@"SwitchamajigControllerDeviceListener: initWithDelegate: bindToPort failed: %@", error);

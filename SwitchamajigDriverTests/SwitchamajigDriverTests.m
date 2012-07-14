@@ -147,7 +147,7 @@ bool listenerErrorReceieved;
     STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error after controller shut down.");
    
     listenerErrorReceieved = false;
-    // Create two listeners. The second one should 
+    // Create two listeners. The second one should generate errors
     SwitchamajigControllerDeviceListener *listener1 = [[SwitchamajigControllerDeviceListener alloc] initWithDelegate:self];
     listener1 = listener1; // Quiet warning
     SwitchamajigControllerDeviceListener *listener2 = [[SwitchamajigControllerDeviceListener alloc] initWithDelegate:self];
