@@ -16,6 +16,7 @@
     id <SwitchamajigDeviceDriverDelegate> delegate;
     int switchState;
     GCDAsyncSocket *asyncSocket;
+    NSLock *networkLock;
 }
 
 - (void) sendSwitchState;

@@ -22,6 +22,7 @@
 - (id) initWithHostname:(NSString *)newHostName {
     self = [super init];
     [self setHostName:newHostName];
+    networkLock = [[NSLock alloc] init];
     return self;
 }
 
@@ -62,6 +63,7 @@
 #define SWITCHAMAJIG_CMD_SET_RELAY 0
 #define SWITCHAMAJIG_TIMEOUT 5
 - (void) sendSwitchState {
+    [networkLock lock];
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
 	asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:mainQueue];
     NSError *error = nil;
@@ -69,6 +71,7 @@
     {
         [delegate SwitchamajigDeviceDriverDisconnected:self withError:error];
         NSLog(@"Error connecting: %@", error);
+        [networkLock unlock];
         return;
     }
     unsigned char packet[SWITCHAMAJIG_PACKET_LENGTH];
@@ -79,6 +82,7 @@
     packet[3] = (switchState >> 4) & 0x0f;
     [asyncSocket writeData:[NSData dataWithBytes:packet length:SWITCHAMAJIG_PACKET_LENGTH] withTimeout:SWITCHAMAJIG_TIMEOUT tag:0];
     [asyncSocket disconnectAfterWriting];
+    [networkLock unlock];
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err
