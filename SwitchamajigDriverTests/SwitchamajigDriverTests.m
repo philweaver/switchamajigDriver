@@ -34,7 +34,7 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
 }
 
 
-- (void)test001DriverBasicOperation
+- (void)test001DriverBasicOperationTCP
 {
     connectedCallbackCalled = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
@@ -48,6 +48,7 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
     STAssertTrue(connectedCallbackCalled, @"Did not receive connect callback.");
     // It should have set the switch state to 0
     STAssertTrue(([controller getSwitchState] == 0x00), @"Failed to initialize switches.");
+    STAssertFalse([controller wasLastPacketUDP], @"Got UDP packet during TCP test (init)");
     // Turn on all switches
     NSError *err;
     DDXMLDocument *xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <turnSwitchesOn> 1 2 3 4 5 6 </turnSwitchesOn>" options:0 error:&err];
@@ -62,6 +63,7 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
     // Confirm that command worked
     int switchState = [controller getSwitchState];
     STAssertTrue((switchState == 0x3f), @"Failed to set switches. State=%d", switchState);
+    STAssertFalse([controller wasLastPacketUDP], @"Got UDP packet during TCP test (3f)");
     // Turn a few switches off
     xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <turnSwitchesOff> 2 4 5 </turnSwitchesOff>" options:0 error:&err];
     if(!xmlCommandDoc) {
@@ -73,8 +75,52 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
     [[NSRunLoop currentRunLoop] runUntilDate:oneSecondFromNow];
     switchState = [controller getSwitchState];
     STAssertTrue((switchState == 0x25), @"Failed to set switches. State=%d", switchState);
+    STAssertFalse([controller wasLastPacketUDP], @"Got UDP packet during TCP test (25)");
     [controller stopListening];
 }
+
+- (void)test002DriverBasicOperationUDP
+{
+    connectedCallbackCalled = false;
+    SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
+    [controller startListening];
+    SwitchamajigControllerDeviceDriver *driver = [[SwitchamajigControllerDeviceDriver alloc] initWithHostname:@"localhost"];
+    [driver setUseUDP:YES];
+    [driver setDelegate:self];
+    // Wait for command
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    // It should have set the switch state to 0
+    STAssertTrue(([controller getSwitchState] == 0x00), @"Failed to initialize switches.");
+    STAssertTrue([controller wasLastPacketUDP], @"Didn't receive UDP packet (init)");
+    // Turn on all switches
+    NSError *err;
+    DDXMLDocument *xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <turnSwitchesOn> 1 2 3 4 5 6 </turnSwitchesOn>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for turnSwitchesOn: %@", err);
+    }
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode];
+    // Wait for command
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    // Confirm that command worked
+    int switchState = [controller getSwitchState];
+    STAssertTrue((switchState == 0x3f), @"Failed to set switches. State=%d", switchState);
+    STAssertTrue([controller wasLastPacketUDP], @"Didn't receive UDP packet (3f)");
+    // Turn a few switches off
+    xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <turnSwitchesOff> 2 4 5 </turnSwitchesOff>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for turnSwitchesOff: %@", err);
+    }
+    commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode];
+    // Wait for command
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    switchState = [controller getSwitchState];
+    STAssertTrue((switchState == 0x25), @"Failed to set switches. State=%d", switchState);
+    STAssertTrue([controller wasLastPacketUDP], @"Didn't receive UDP packet (25)");
+    [controller stopListening];
+}
+
 bool batteryWarning;
 char lastFriendlyName[255];
 bool listenerErrorReceieved;
@@ -91,7 +137,7 @@ bool listenerErrorReceieved;
     
 }
 
-- (void) test002ListenerBasicOperation {
+- (void) test003ListenerBasicOperation {
     listenerErrorReceieved = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
     SwitchamajigControllerDeviceListener *listener = [[SwitchamajigControllerDeviceListener alloc] initWithDelegate:self];
@@ -111,7 +157,7 @@ bool listenerErrorReceieved;
     STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
 }
 
-- (void) test003DriverAndListenerErrors {
+- (void) test004DriverAndListenerErrors {
     disconnectedCallbackCalled = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
     [controller startListening];

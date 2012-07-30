@@ -23,6 +23,7 @@
 
 @property (nonatomic, strong) NSString *hostName;
 @property (nonatomic, strong) NSString *friendlyName;
+@property BOOL useUDP;
 @end
 
 
@@ -37,12 +38,15 @@
 
 @interface SimulatedSwitchamajigController : NSObject <NSStreamDelegate> {
     NSInputStream *inputStream;
+    GCDAsyncUdpSocket *udpListenSocket;
     GCDAsyncSocket *listenSocket;
     int switchState;
+    bool lastPacketWasUDP;
 }
 - (void) startListening;
 - (void) stopListening;
 - (int) getSwitchState;
+- (bool) wasLastPacketUDP;
 - (void) sendHeartbeat:(char *)friendlyName batteryVoltageInmV:(int)batteryVoltageInmV;
 
 @property (strong) GCDAsyncSocket *connectedSocket;

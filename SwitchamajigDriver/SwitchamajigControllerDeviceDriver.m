@@ -10,11 +10,21 @@
 #import "GCDAsyncSocket.h"
 #include <stdlib.h>
 
+// Includes for socket
+#import "sys/socket.h"
+#import "netinet/in.h"
+#import "netdb.h"
+#import "sys/unistd.h"
+#import "sys/fcntl.h"
+#import "sys/poll.h"
+#import "arpa/inet.h"
+#import "errno.h"
+
 @implementation SwitchamajigControllerDeviceDriver
 
 @synthesize hostName;
 @synthesize friendlyName;
-
+@synthesize useUDP;
 #define ROVING_PORTNUM 2000
 #define ROVING_LISTENPORT 55555
 #define MAX_SWITCH_NUMBER 6
@@ -62,26 +72,67 @@
 #define SWITCHAMAJIG_PACKET_BYTE_0 255
 #define SWITCHAMAJIG_CMD_SET_RELAY 0
 #define SWITCHAMAJIG_TIMEOUT 5
+
 - (void) sendSwitchState {
     [networkLock lock];
-    dispatch_queue_t mainQueue = dispatch_get_main_queue();
-	asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:mainQueue];
-    NSError *error = nil;
-    if (![asyncSocket connectToHost:hostName onPort:ROVING_PORTNUM error:&error])
-    {
-        [delegate SwitchamajigDeviceDriverDisconnected:self withError:error];
-        NSLog(@"Error connecting: %@", error);
-        [networkLock unlock];
-        return;
-    }
     unsigned char packet[SWITCHAMAJIG_PACKET_LENGTH];
     memset(packet, 0, sizeof(packet));
     packet[0] = SWITCHAMAJIG_PACKET_BYTE_0;
     packet[1] = SWITCHAMAJIG_CMD_SET_RELAY;
     packet[2] = switchState & 0x0f;
     packet[3] = (switchState >> 4) & 0x0f;
-    [asyncSocket writeData:[NSData dataWithBytes:packet length:SWITCHAMAJIG_PACKET_LENGTH] withTimeout:SWITCHAMAJIG_TIMEOUT tag:0];
-    [asyncSocket disconnectAfterWriting];
+
+    if([self useUDP]) {
+        // Create UDP socket
+        int server_socket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+        if(server_socket <= 0) {
+            NSLog(@"SwitchamajigControllerDeviceDriver: sendSwitchState: unable to open UDP socket");
+            [networkLock unlock];
+            return;
+        }
+        char on = 1;
+        setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+        // Set timeout on all operations to 1 second
+        struct timeval tv;
+        tv.tv_sec = 1;
+        tv.tv_usec = 0;
+        setsockopt(server_socket, SOL_SOCKET, SO_SNDTIMEO, (void *)&tv, sizeof(tv));
+        setsockopt(server_socket, SOL_SOCKET, SO_RCVTIMEO, (void *)&tv, sizeof(tv));
+        char ip_addr_string[2*INET6_ADDRSTRLEN];
+        [hostName getCString:ip_addr_string maxLength:sizeof(ip_addr_string) encoding:[NSString defaultCStringEncoding]];
+        struct hostent *host = gethostbyname(ip_addr_string);
+        if(!host) {
+            NSLog(@"SwitchamajigControllerDeviceDriver: sendSwitchState: unable to resolve host");
+            close(server_socket);
+            [networkLock unlock];
+            return;
+        }
+        struct sockaddr_in sin;
+        memcpy(&sin.sin_addr.s_addr, host->h_addr, host->h_length);
+        sin.sin_family = AF_INET;
+        sin.sin_port = htons(ROVING_PORTNUM);
+        // Prevent signals; we'll handle error messages instead
+        int on2;
+        setsockopt(server_socket, SOL_SOCKET, SO_NOSIGPIPE, &on2, sizeof(on2));
+        if(sendto(server_socket, packet, sizeof(packet), 0, (struct sockaddr*) &sin, sizeof(sin)) < 0) {
+            NSLog(@"SwitchamajigControllerDeviceDriver: sendSwitchState: unable to sendto UDP socket");
+        }
+        close(server_socket);
+        
+    } else {
+        dispatch_queue_t mainQueue = dispatch_get_main_queue();
+        asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:mainQueue];
+        NSError *error = nil;
+        if (![asyncSocket connectToHost:hostName onPort:ROVING_PORTNUM error:&error])
+        {
+            [delegate SwitchamajigDeviceDriverDisconnected:self withError:error];
+            NSLog(@"Error connecting: %@", error);
+            [networkLock unlock];
+            return;
+        }
+        [asyncSocket writeData:[NSData dataWithBytes:packet length:SWITCHAMAJIG_PACKET_LENGTH] withTimeout:SWITCHAMAJIG_TIMEOUT tag:0];
+        [asyncSocket disconnectAfterWriting];
+    }
     [networkLock unlock];
 }
 
@@ -164,12 +215,25 @@
 
 - (void) startListening {
     switchState = 0;
-    // Listen to Switchamajig port number
+    // Listen to Switchamajig TCP port number
     listenSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     NSError *error = nil;
     if (![listenSocket acceptOnPort:ROVING_PORTNUM error:&error])
     {
         NSLog(@"Error trying to listen: %@", error);
+    }
+    
+    // Also listen as UDP
+    dispatch_queue_t mainQueue = dispatch_get_main_queue();
+	udpListenSocket = [[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:mainQueue];
+    [udpListenSocket setIPv4Enabled:YES];
+    [udpListenSocket setIPv6Enabled:NO];
+    if(![udpListenSocket bindToPort:ROVING_PORTNUM error:&error]) {
+        NSLog(@"SimulatedSwitchamajigController: startListening: bindToPort failed: %@", error);
+    } else {
+        if(![udpListenSocket beginReceiving:&error]) {
+            NSLog(@"SimulatedSwitchamajigController: startListening: beginReceiving failed: %@", error);
+        }
     }
 }
 
@@ -183,6 +247,7 @@
 {
     const unsigned char *packet = [data bytes];
     int datalen = [data length];
+    lastPacketWasUDP = false;
     if(datalen != 8) {
         NSLog(@"Simulated Switchamajig Controller received packet of %d bytes. Ignoring.", datalen);
     }
@@ -193,11 +258,34 @@
     }
 }
 
+- (void)udpSocket:(GCDAsyncUdpSocket *)sock didReceiveData:(NSData *)data fromAddress:(NSData *)address withFilterContext:(id)filterContext {
+    const unsigned char *packet = [data bytes];
+    int datalen = [data length];
+    lastPacketWasUDP = true;
+    if(datalen != 8) {
+        NSLog(@"Simulated Switchamajig Controller received UDP packet of %d bytes. Ignoring.", datalen);
+    }
+    if((packet[0] == SWITCHAMAJIG_PACKET_BYTE_0) && (packet[1] == SWITCHAMAJIG_CMD_SET_RELAY))  {
+        int newSwitchState = packet[2] & 0x0f;
+        newSwitchState |= (packet[3] & 0x0f) << 4;
+        switchState = newSwitchState;
+    }
+}
+
+- (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
+}
+
 - (int) getSwitchState {
     return switchState;
 }
 
+- (bool) wasLastPacketUDP {
+    return lastPacketWasUDP;
+}
+
 - (void) stopListening {
+    [udpListenSocket setDelegate:nil];
+    [udpListenSocket close];
     [listenSocket setDelegate:nil];
     [listenSocket disconnect];
     [connectedSocket setDelegate:nil];
