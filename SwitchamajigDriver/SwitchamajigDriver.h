@@ -33,6 +33,7 @@
 
 @interface SwitchamajigControllerDeviceDriver : SwitchamajigDriver {
 }
+@property BOOL useUDP;
 
 @end
 

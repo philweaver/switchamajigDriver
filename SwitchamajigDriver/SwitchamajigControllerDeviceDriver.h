@@ -23,7 +23,6 @@
 
 @property (nonatomic, strong) NSString *hostName;
 @property (nonatomic, strong) NSString *friendlyName;
-@property BOOL useUDP;
 @end
 
 
