@@ -26,6 +26,9 @@
 		AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */; };
 		AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */; };
 		AD921AFF157C992100940981 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AFE157C992100940981 /* UIKit.framework */; };
+		ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */; };
+		ADB7515E15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */; };
+		ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +65,8 @@
 		AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GCDAsyncUdpSocket.h; path = CocoaAsyncSocket/GCD/GCDAsyncUdpSocket.h; sourceTree = "<group>"; };
 		AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GCDAsyncUdpSocket.m; path = CocoaAsyncSocket/GCD/GCDAsyncUdpSocket.m; sourceTree = "<group>"; };
 		AD921AFE157C992100940981 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = socket_switchamajig1_cfg.cpp; sourceTree = "<group>"; };
+		ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = socket_switchamajig1_cfg.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +134,8 @@
 		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
 			isa = PBXGroup;
 			children = (
+				ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */,
+				ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */,
 				AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */,
 				AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */,
 				AD921AE7157899B800940981 /* GCDAsyncSocket.h */,
@@ -179,6 +186,7 @@
 				AD921AE115773B3A00940981 /* SwitchamajigControllerDeviceDriver.h in Headers */,
 				AD921AE9157899B800940981 /* GCDAsyncSocket.h in Headers */,
 				AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */,
+				ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,6 +292,7 @@
 				AD921AE015773B3A00940981 /* SwitchamajigControllerDeviceDriver.m in Sources */,
 				AD921AEA157899B800940981 /* GCDAsyncSocket.m in Sources */,
 				AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */,
+				ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD8CF0591573055500D0BC98 /* SwitchamajigDriverTests.m in Sources */,
+				ADB7515E15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
