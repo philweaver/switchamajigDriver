@@ -8,6 +8,7 @@
 
 #import "SwitchamajigDriver.h"
 
+const NSString *SwitchamajigDriverErrorDomain = @"com.switchamjig.switchamajigDriver";
 @implementation SwitchamajigDriver
 - (id) initWithHostname:(NSString *)hostName {
     return nil;
@@ -16,7 +17,7 @@
 - (void) setDelegate:(id)delegate {
     
 }
-- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode {
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError **)error{
     
 }
 @end

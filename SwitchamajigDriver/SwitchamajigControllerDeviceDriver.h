@@ -41,6 +41,11 @@
     GCDAsyncSocket *listenSocket;
     int switchState;
     bool lastPacketWasUDP;
+@public
+    NSString *deviceName;
+    NSString *ssidName;
+    int wifiChannel;
+    NSString *wifiPassphrase;
 }
 - (void) startListening;
 - (void) stopListening;

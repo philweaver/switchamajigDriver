@@ -19,6 +19,7 @@
 #import "sys/poll.h"
 #import "arpa/inet.h"
 #import "errno.h"
+#import "socket_switchamajig1_cfg.hpp"
 
 @implementation SwitchamajigControllerDeviceDriver
 
@@ -44,7 +45,7 @@
 }
 
 // Send command specified in XML
-- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode {
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError *__autoreleasing *)error{
     NSString *command = [xmlCommandNode name];
     if([command isEqualToString:@"turnSwitchesOn"]) {
         NSString *switchOnString = [xmlCommandNode stringValue];
@@ -55,6 +56,7 @@
                 switchState |= 1 << (switchNumber-1);
             }
         }
+        [self sendSwitchState];
     } else if([command isEqualToString:@"turnSwitchesOff"]) {
         NSString *switchOffString = [xmlCommandNode stringValue];
         NSScanner *switchOffScan = [[NSScanner alloc] initWithString:switchOffString];
@@ -64,8 +66,90 @@
                 switchState &= ~(1 << (switchNumber-1));
             }
         }
+        [self sendSwitchState];
+    } else if ([command isEqualToString:@"setDeviceName"]) {
+        NSString *newName = [xmlCommandNode stringValue];
+        int socket = switchamajig1_open_socket([[self hostName] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        if(!socket) {
+            NSLog(@"setDeviceName: null socket");
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorNullSocket userInfo:nil];
+            return;
+        }
+        bool status = switchamajig1_enter_command_mode(socket);
+        if(status)
+            status = switchamajig1_set_name(socket, [newName cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        if(status)
+            status = switchamajig1_save(socket);
+        if(!status) {
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorConfigProblem userInfo:nil];
+            NSLog(@"Error executing setDeviceName");
+        }
+        switchamajig1_close_socket(socket);
+    } else if ([command isEqualToString:@"configureDeviceNetworking"]) {
+        DDXMLNode *ssidNode = [(DDXMLElement *)xmlCommandNode attributeForName:@"ssid"];
+        if(!ssidNode){
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorBadArguments userInfo:nil];
+            NSLog(@"configureDeviceNetworking: no ssid");
+            return;
+        }
+        NSString *ssid = [ssidNode stringValue];
+
+        DDXMLNode *chanNode = [(DDXMLElement *)xmlCommandNode attributeForName:@"channel"];
+        if(!chanNode){
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorBadArguments userInfo:nil];
+            NSLog(@"configureDeviceNetworking: no channel node");
+            return;
+        }
+        NSString *chanString = [chanNode stringValue];
+        NSScanner *chanScan = [[NSScanner alloc] initWithString:chanString];
+        int channel;
+        if(![chanScan scanInt:&channel]) {
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorBadArguments userInfo:nil];
+            NSLog(@"configureDeviceNetworking: no channel");
+            return;
+        }
+
+        DDXMLNode *passphraseNode = [(DDXMLElement *)xmlCommandNode attributeForName:@"passphrase"];
+        if(!passphraseNode){
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorBadArguments userInfo:nil];
+            NSLog(@"configureDeviceNetworking: no passphrase");
+            return;
+        }
+        NSString *passphrase = [passphraseNode stringValue];
+        
+        int socket = switchamajig1_open_socket([[self hostName] cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+        if(!socket) {
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorNullSocket userInfo:nil];
+            NSLog(@"configureDeviceNetworking: null socket");
+            return;
+        }
+        bool status = switchamajig1_enter_command_mode(socket);
+        struct switchamajig1_network_info newInfo;
+        newInfo.channel = channel;
+        NSString *ssidWithDollars = [ssid stringByReplacingOccurrencesOfString:@" " withString:@"$"];
+        strncpy(newInfo.ssid, [ssidWithDollars UTF8String], sizeof(newInfo.ssid));
+        NSString *phraseWithDollars = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@"$"];
+        if(![phraseWithDollars length])
+            strncpy(newInfo.passphrase, "none", sizeof(newInfo.passphrase));
+        else
+            strncpy(newInfo.passphrase, [phraseWithDollars cStringUsingEncoding:NSUTF8StringEncoding], sizeof(newInfo.passphrase));
+        if(status)
+            status = switchamajig1_set_netinfo(socket, &newInfo);
+        if(status)
+            status = switchamajig1_save(socket);
+        if(status)
+            status = switchamajig1_exit_command_mode(socket);
+        if(status)
+            status = switchamajig1_write_eeprom(socket, 0, 0);
+        if(status)
+            status = switchamajig1_reset(socket);
+        if(!status) {
+            *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorConfigProblem userInfo:nil];
+        }
+        switchamajig1_close_socket(socket);
+    } else {
+        *error = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorUnknownCommand userInfo:nil];
     }
-    [self sendSwitchState];
 }
 
 #define SWITCHAMAJIG_PACKET_LENGTH 8
@@ -241,6 +325,7 @@
 {
     [self setConnectedSocket:newSocket];
     [newSocket readDataToLength:SWITCHAMAJIG_PACKET_LENGTH withTimeout:-1 tag:0];
+    NSLog(@"SimulatedSwitchamajigController: accepted new socket");
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag

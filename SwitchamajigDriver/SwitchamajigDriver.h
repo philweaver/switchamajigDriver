@@ -8,6 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import "../../KissXML/KissXML/DDXMLDocument.h"
+const NSString *SwitchamajigDriverErrorDomain;
+// Error codes
+#define SJDriverErrorUnknownCommand 100
+#define SJDriverErrorBadArguments 101
+#define SJDriverErrorNullSocket 1000
+#define SJDriverErrorConfigProblem 1001
 
 @protocol SwitchamajigDeviceDriverDelegate <NSObject> 
 - (void) SwitchamajigDeviceDriverConnected:(id)deviceDriver;
@@ -23,7 +29,7 @@
 @interface SwitchamajigDriver : NSObject
 - (id) initWithHostname:(NSString *)hostName;
 - (void) setDelegate:(id)delegate;
-- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode;
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError **)error;
 @end
 
 @interface SwitchamajigListener : NSObject
