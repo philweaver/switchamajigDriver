@@ -1,0 +1,3 @@
+[submodule "SwitchamajigDriver/CocoaAsyncSocket"]
+	path = SwitchamajigDriver/CocoaAsyncSocket
+	url = https://github.com/robbiehanson/CocoaAsyncSocket.git
