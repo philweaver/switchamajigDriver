@@ -37,8 +37,8 @@
     return self;
 }
 
-- (void) setDelegate:(id)newDelegate {
-    delegate = newDelegate;
+- (void) setDelegate:(id<SwitchamajigDeviceDriverDelegate>)newDelegate {
+    [super setDelegate:newDelegate];
     // Send packet to turn switches off
     switchState = 0;
     [self sendSwitchState];
@@ -209,7 +209,7 @@
         NSError *error = nil;
         if (![asyncSocket connectToHost:hostName onPort:ROVING_PORTNUM error:&error])
         {
-            [delegate SwitchamajigDeviceDriverDisconnected:self withError:error];
+            [[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
             NSLog(@"Error connecting: %@", error);
             [networkLock unlock];
             return;
@@ -224,13 +224,13 @@
 {
     if(err) {
         NSLog(@"socketDidDisconnect:%p withError: %@", sock, err);
-        [delegate SwitchamajigDeviceDriverDisconnected:self withError:err];
+        [[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:err];
     }
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(UInt16)port
 {
-    [delegate SwitchamajigDeviceDriverConnected:self];
+    [[self delegate] SwitchamajigDeviceDriverConnected:self];
 	//NSLog(@"socketDidConnect to port %d", port);
 }
 
@@ -240,9 +240,9 @@
 
 @synthesize udpSocket;
 
-- (id) initWithDelegate:(id)delegate_init {
+- (id) initWithDelegate:(id <SwitchamajigDeviceListenerDelegate>)delegate_init {
     self = [super init];
-    delegate = delegate_init;
+    [super setDelegate:delegate_init];
     // Set up UDP socket
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
 	[self setUdpSocket:[[GCDAsyncUdpSocket alloc] initWithDelegate:self delegateQueue:mainQueue]];
@@ -251,11 +251,11 @@
     NSError *error;
     if(![[self udpSocket] bindToPort:ROVING_LISTENPORT error:&error]) {
         NSLog(@"SwitchamajigControllerDeviceListener: initWithDelegate: bindToPort failed: %@", error);
-        [delegate SwitchamajigDeviceListenerHandleError:self theError:error];
+        [[self delegate] SwitchamajigDeviceListenerHandleError:self theError:error];
     } else {
         if(![[self udpSocket] beginReceiving:&error]) {
             NSLog(@"SwitchamajigControllerDeviceListener: initWithDelegate: beginReceiving failed: %@", error);
-            [delegate SwitchamajigDeviceListenerHandleError:self theError:error];
+            [[self delegate] SwitchamajigDeviceListenerHandleError:self theError:error];
         }
     }
     
@@ -277,16 +277,16 @@
         NSString *switchName = [NSString stringWithCString:(char*)packet+DEVICE_STRING_OFFSET encoding:NSASCIIStringEncoding];
         int batteryVoltage = ((unsigned char)packet[BATTERY_VOLTAGE_OFFSET]) * 256 + ((unsigned char)packet[BATTERY_VOLTAGE_OFFSET + 1]);
         if(batteryVoltage < BATTERY_VOLTAGE_WARN_LIMIT) {
-            [delegate SwitchamajigDeviceListenerHandleBatteryWarning:self hostname:hostname friendlyname:switchName];
+            [[self delegate] SwitchamajigDeviceListenerHandleBatteryWarning:self hostname:hostname friendlyname:switchName];
         }
-        [delegate SwitchamajigDeviceListenerFoundDevice:self hostname:hostname friendlyname:switchName];
+        [[self delegate] SwitchamajigDeviceListenerFoundDevice:self hostname:hostname friendlyname:switchName];
     }
 }
 
 - (void)udpSocketDidClose:(GCDAsyncUdpSocket *)sock withError:(NSError *)error {
     if(error != nil) {
         NSLog(@"SwitchamajigControllerDeviceListener: udpSocketDidClose: %@", error);
-        [delegate SwitchamajigDeviceListenerHandleError:self theError:error];
+        [[self delegate] SwitchamajigDeviceListenerHandleError:self theError:error];
     }
 }
 

@@ -27,12 +27,13 @@ const NSString *SwitchamajigDriverErrorDomain;
 @end
 
 @interface SwitchamajigDriver : NSObject
+@property (nonatomic) id <SwitchamajigDeviceDriverDelegate> delegate;
 - (id) initWithHostname:(NSString *)hostName;
-- (void) setDelegate:(id)delegate;
 - (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError **)error;
 @end
 
 @interface SwitchamajigListener : NSObject
+@property (nonatomic) id <SwitchamajigDeviceListenerDelegate> delegate;
 - (id) initWithDelegate:(id)delegate_init;
 
 @end
@@ -43,8 +44,17 @@ const NSString *SwitchamajigDriverErrorDomain;
 
 @end
 
+@interface SwitchamajigIRDeviceDriver : SwitchamajigDriver {
+}
+@end
+
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
 
+}
+@end
+
+@interface SwitchamajigIRDeviceListener : SwitchamajigListener {
+    
 }
 
 @end

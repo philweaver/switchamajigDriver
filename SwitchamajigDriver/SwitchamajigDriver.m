@@ -7,16 +7,13 @@
 //
 
 #import "SwitchamajigDriver.h"
-
 const NSString *SwitchamajigDriverErrorDomain = @"com.switchamjig.switchamajigDriver";
 @implementation SwitchamajigDriver
+@synthesize delegate;
 - (id) initWithHostname:(NSString *)hostName {
     return nil;
 }
 
-- (void) setDelegate:(id)delegate {
-    
-}
 - (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError **)error{
     
 }
@@ -24,6 +21,7 @@ const NSString *SwitchamajigDriverErrorDomain = @"com.switchamjig.switchamajigDr
 
 
 @implementation SwitchamajigListener
+@synthesize delegate;
 - (id) initWithDelegate:(id)delegate_init {
     return nil;
 }

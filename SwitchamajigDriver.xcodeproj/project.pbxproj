@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD59BD8115DEF673001D5BFF /* SwitchamajigIRDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */; };
+		AD59BD8215DEF673001D5BFF /* SwitchamajigIRDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */; };
 		AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
 		AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */; };
 		AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0491573055500D0BC98 /* SenTestingKit.framework */; };
@@ -27,7 +29,6 @@
 		AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = AD921AFB157C7B1F00940981 /* GCDAsyncUdpSocket.m */; };
 		AD921AFF157C992100940981 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AFE157C992100940981 /* UIKit.framework */; };
 		ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */; };
-		ADB7515E15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */; };
 		ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchamajigIRDriver.h; sourceTree = "<group>"; };
+		AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigIRDriver.m; sourceTree = "<group>"; };
 		AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwitchamajigDriver.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8CF03B1573055500D0BC98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
@@ -145,6 +148,8 @@
 				AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */,
 				AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */,
 				AD8CF03E1573055500D0BC98 /* Supporting Files */,
+				AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */,
+				AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */,
 			);
 			path = SwitchamajigDriver;
 			sourceTree = "<group>";
@@ -187,6 +192,7 @@
 				AD921AE9157899B800940981 /* GCDAsyncSocket.h in Headers */,
 				AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */,
 				ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */,
+				AD59BD8115DEF673001D5BFF /* SwitchamajigIRDriver.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -293,6 +299,7 @@
 				AD921AEA157899B800940981 /* GCDAsyncSocket.m in Sources */,
 				AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */,
 				ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */,
+				AD59BD8215DEF673001D5BFF /* SwitchamajigIRDriver.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,7 +308,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD8CF0591573055500D0BC98 /* SwitchamajigDriverTests.m in Sources */,
-				ADB7515E15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,7 +13,6 @@
 
 
 @interface SwitchamajigControllerDeviceDriver () {
-    id <SwitchamajigDeviceDriverDelegate> delegate;
     int switchState;
     GCDAsyncSocket *asyncSocket;
     NSLock *networkLock;
@@ -27,7 +26,6 @@
 
 
 @interface SwitchamajigControllerDeviceListener () {
-    id <SwitchamajigDeviceListenerDelegate> delegate;
 }
 
 @property (nonatomic, strong) GCDAsyncUdpSocket *udpSocket;

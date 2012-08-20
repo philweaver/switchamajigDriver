@@ -8,9 +8,10 @@
 
 #import "SwitchamajigDriverTests.h"
 #import "SwitchamajigControllerDeviceDriver.h"
+#import "SwitchamajigIRDriver.h"
 @implementation SwitchamajigDriverTests
 
-#define RUN_ALL_TESTS 1
+#define RUN_ALL_TESTS 0
 - (void)setUp
 {
     [super setUp];
@@ -53,7 +54,7 @@ bool listenerErrorReceieved;
 
 
 #if RUN_ALL_TESTS
-- (void)test001DriverBasicOperationTCP
+- (void)test001ControllerDriverBasicOperationTCP
 {
     connectedCallbackCalled = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
@@ -98,7 +99,7 @@ bool listenerErrorReceieved;
     [controller stopListening];
 }
 
-- (void)test002DriverBasicOperationUDP
+- (void)test002ControllerDriverBasicOperationUDP
 {
     connectedCallbackCalled = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
@@ -140,7 +141,7 @@ bool listenerErrorReceieved;
     [controller stopListening];
 }
 
-- (void) test003ListenerBasicOperation {
+- (void) test003ControllerListenerBasicOperation {
     listenerErrorReceieved = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
     SwitchamajigControllerDeviceListener *listener = [[SwitchamajigControllerDeviceListener alloc] initWithDelegate:self];
@@ -160,7 +161,7 @@ bool listenerErrorReceieved;
     STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
 }
 
-- (void) test004DriverAndListenerErrors {
+- (void) test004ControllerDriverAndListenerErrors {
     disconnectedCallbackCalled = false;
     SimulatedSwitchamajigController *controller = [SimulatedSwitchamajigController alloc];
     [controller startListening];
@@ -209,6 +210,26 @@ bool listenerErrorReceieved;
     STAssertTrue(listenerErrorReceieved, @"Should receive error when two listeners conflict.");
 }
 #endif
+
+- (void) test005IRListenerBasicOperation {
+    listenerErrorReceieved = false;
+    SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25000];
+    [irDevice setDeviceName:@"Roger the shrubber"];
+    SwitchamajigIRDeviceListener *listener = [[SwitchamajigIRDeviceListener alloc] initWithDelegate:self];
+    listener = listener; // Quiet warning
+    [irDevice startListening];
+    [irDevice announcePresenceToListener:listener withHostName:@"localhost"];
+    //[controller sendHeartbeat:"testName1" batteryVoltageInmV:2500];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+    //STAssertTrue(!strcmp(lastFriendlyName, "testName1"), @"Did not get testName1");
+    
+    // Have two IR devices broadcast their presence simultaneously, and 
+    //[controller sendHeartbeat:"testName2" batteryVoltageInmV:1000];
+    STAssertTrue(!strcmp(lastFriendlyName, "Roger the shrubber"), @"Did not get Roger the shrubber. Instead got %s", lastFriendlyName);
+    STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
+}
+
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the
