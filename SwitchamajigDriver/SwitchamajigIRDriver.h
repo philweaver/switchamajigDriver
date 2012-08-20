@@ -15,10 +15,6 @@
 
 @interface SwitchamajigIRDeviceListener () <NSNetServiceBrowserDelegate, NSNetServiceDelegate> {
     NSNetServiceBrowser *netServiceBrowser;
-    NSURLConnection *puckStatusConnection;
-    NSNetService *retainedNetService;
-    NSString *hostName;
-    NSMutableData *puckRequestData;
 }
 
 @end
@@ -26,9 +22,13 @@
 @interface SimulatedSwitchamajigIR : NSObject {
     GCDAsyncSocket *listenSocket;
     GCDAsyncSocket *connectedSocket;
+    int numPuckStatusRequests;
 }
 - (void) announcePresenceToListener:(SwitchamajigIRDeviceListener*)listener withHostName:(NSString *)hostname;
 - (void) startListening;
+- (void) returnPuckStatus;
+- (void) resetPuckRequestCount;
+- (int) getPuckRequestCount;
 @property int port;
 @property NSString *deviceName;
 @end

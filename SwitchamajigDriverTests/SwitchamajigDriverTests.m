@@ -212,22 +212,82 @@ bool listenerErrorReceieved;
 #endif
 
 - (void) test005IRListenerBasicOperation {
+    // Basic test with a single unit
     listenerErrorReceieved = false;
     SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
     [irDevice setPort:25000];
     [irDevice setDeviceName:@"Roger the shrubber"];
+    [irDevice resetPuckRequestCount];
     SwitchamajigIRDeviceListener *listener = [[SwitchamajigIRDeviceListener alloc] initWithDelegate:self];
-    listener = listener; // Quiet warning
     [irDevice startListening];
     [irDevice announcePresenceToListener:listener withHostName:@"localhost"];
-    //[controller sendHeartbeat:"testName1" batteryVoltageInmV:2500];
-    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
-    //STAssertTrue(!strcmp(lastFriendlyName, "testName1"), @"Did not get testName1");
-    
-    // Have two IR devices broadcast their presence simultaneously, and 
-    //[controller sendHeartbeat:"testName2" batteryVoltageInmV:1000];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    int numPuckRequests = [irDevice getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device should have received one puck status request, but count is %d.", numPuckRequests);
+    [irDevice returnPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Roger the shrubber"), @"Did not get Roger the shrubber. Instead got %s", lastFriendlyName);
+    
+    // Test to force race condition with two units
+    SimulatedSwitchamajigIR *irDevice2 = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice2 setPort:25001];
+    [irDevice2 setDeviceName:@"Unit2"];
+    [irDevice2 resetPuckRequestCount];
+    SimulatedSwitchamajigIR *irDevice3 = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice3 setPort:25002];
+    [irDevice3 setDeviceName:@"Unit3"];
+    [irDevice3 resetPuckRequestCount];
+    [irDevice2 startListening];
+    [irDevice3 startListening];
+    [irDevice2 announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numPuckRequests = [irDevice2 getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
+    // While this request is in flight, have a second unit get discovered
+    [irDevice3 announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numPuckRequests = [irDevice3 getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
+    // Complete the first puck status request
+    [irDevice2 returnPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(!strcmp(lastFriendlyName, "Unit2"), @"Did not get Unit2. Instead got %s", lastFriendlyName);
+    // Complete the second puck status request
+    [irDevice3 returnPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(!strcmp(lastFriendlyName, "Unit3"), @"Did not get Unit3. Instead got %s", lastFriendlyName);
+    
+    // Repeat the sequence again, but complete the second request first
+    SimulatedSwitchamajigIR *irDevice4 = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice4 setPort:25003];
+    [irDevice4 setDeviceName:@"Unit4"];
+    [irDevice4 resetPuckRequestCount];
+    SimulatedSwitchamajigIR *irDevice5 = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice5 setPort:25004];
+    [irDevice5 setDeviceName:@"Unit5"];
+    [irDevice5 resetPuckRequestCount];
+    [irDevice4 startListening];
+    [irDevice5 startListening];
+    [irDevice4 announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numPuckRequests = [irDevice4 getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
+    // While this request is in flight, have a second unit get discovered
+    [irDevice5 announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numPuckRequests = [irDevice5 getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
+    // Complete the second puck status request
+    [irDevice5 returnPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(!strcmp(lastFriendlyName, "Unit5"), @"Did not get Unit5. Instead got %s", lastFriendlyName);
+    // Complete the first puck status request
+    [irDevice4 returnPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(!strcmp(lastFriendlyName, "Unit4"), @"Did not get Unit4. Instead got %s", lastFriendlyName);
+    
     STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
+    
 }
 
 

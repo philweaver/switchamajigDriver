@@ -15,6 +15,19 @@
 @implementation SwitchamajigIRDeviceDriver
 @end
 
+@interface SJAugmentedNSURLConnection : NSURLConnection {
+    
+}
+@property NSString *SJHostName;
+@property NSMutableData *SJData;
+@end
+
+@implementation SJAugmentedNSURLConnection
+@synthesize SJHostName;
+@synthesize SJData;
+
+@end
+
 @implementation SwitchamajigIRDeviceListener
 
 - (id) initWithDelegate:(id <SwitchamajigDeviceListenerDelegate>)delegate_init {
@@ -36,7 +49,7 @@
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didFindService:(NSNetService *)netService moreComing:(BOOL)moreServicesComing {
     NSLog(@"didFindService %@\n", [netService hostName]);
     [netService setDelegate:self];
-    retainedNetService = netService; // Prevent netService from disappearing
+    //retainedNetService = netService; // Prevent netService from disappearing
     [netService resolveWithTimeout:0];
 }
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didNotSearch:(NSDictionary *)errorInfo {
@@ -78,16 +91,17 @@
 - (void)netServiceDidResolveAddress:(NSNetService *)sender {
     // We've found a candidate for a Switchamajig IR. Send it a "puckstatus" request. We'll know from
     // the response if this is a true IR unit
-    hostName = [sender hostName];
-    NSLog(@"port %d", [sender port]);
+    NSString *hostName = [NSString stringWithFormat:@"%@:%d", [sender hostName], [sender port]];
+    //NSLog(@"hostname %@", hostName);
     NSString *puckStatusRequestString = [NSString stringWithFormat:@"http://%@:%d/puckStatus.xml", [sender hostName], [sender port]];
     NSURLRequest *puckStatusRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:puckStatusRequestString] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:SWITCHAMAJIG_TIMEOUT];
-    puckStatusConnection = [[NSURLConnection alloc] initWithRequest:puckStatusRequest delegate:self];
-    if(!puckStatusConnection) {
+    SJAugmentedNSURLConnection *puckStatusConnectionAug = [[SJAugmentedNSURLConnection alloc] initWithRequest:puckStatusRequest delegate:self];
+    if(!puckStatusConnectionAug) {
         NSLog(@"SwitchamajigIRDeviceListener: netServiceDidResolveAddress: connection failed\n");
         return;
     }
-    puckRequestData = [NSMutableData data];
+    [puckStatusConnectionAug setSJHostName:hostName];
+    [puckStatusConnectionAug setSJData:[NSMutableData data]];
 }
 
 - (void)netServiceDidStop:(NSNetService *)sender{
@@ -104,31 +118,30 @@
 
 // NSURLConnection Delegate
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
-    [puckRequestData setLength:0];
+    SJAugmentedNSURLConnection *augConnection = (SJAugmentedNSURLConnection *)connection;
+    [[augConnection SJData] setLength:0];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    [puckRequestData appendData:data];
+    SJAugmentedNSURLConnection *augConnection = (SJAugmentedNSURLConnection *)connection;
+    [[augConnection SJData] appendData:data];
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    // Release the connection
-    puckStatusConnection = nil;
-    puckRequestData = nil;
     // Log error
     NSLog(@"SwitchamajigIRDeviceListener: connection didFailWithError - %@ %@",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+- (void)connectionDidFinishLoading:(NSURLConnection *)conn
 {
-    NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading. Received %d bytes of data",[puckRequestData length]);
-
+    //NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading. Received %d bytes of data",[puckRequestData length]);
+    SJAugmentedNSURLConnection *connection = (SJAugmentedNSURLConnection *)conn;
     NSError *error;
-    DDXMLDocument *puckResponse = [[DDXMLDocument alloc] initWithData:puckRequestData options:0 error:&error];
+    DDXMLDocument *puckResponse = [[DDXMLDocument alloc] initWithData:[connection SJData] options:0 error:&error];
 
     if(error) {
         NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: xml document error %@", error);
@@ -144,11 +157,8 @@
         NSLog(@"Found unit with name %@", friendlyNameRaw);
         // Cover up SQ Blaster stuff
         NSString *friendlyName = [friendlyNameRaw stringByReplacingOccurrencesOfString:@"sq-blaster" withString:@"SwitchamajigIR"];
-        [[self delegate] SwitchamajigDeviceListenerFoundDevice:self hostname:hostName friendlyname:friendlyName];
-        
+        [[self delegate] SwitchamajigDeviceListenerFoundDevice:self hostname:[connection SJHostName] friendlyname:friendlyName];
     }
-    puckRequestData = nil;
-    puckStatusConnection = nil;
 }
 
 @end
@@ -192,26 +202,34 @@
 {
     connectedSocket = newSocket;
     [newSocket readDataWithTimeout:-1 tag:0];
-    NSLog(@"SimulatedSwitchamajigController: accepted new socket");
+    //NSLog(@"SimulatedSwitchamajigController: accepted new socket");
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag
 {
-    int datalen = [data length];
-    NSLog(@"Simulated Switchamajig Controller received packet of %d bytes.", datalen);
+    //NSLog(@"Simulated Switchamajig Controller received packet of %d bytes.", [data length]);
     NSString *readString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"SimulatedSwitchamajigIR: didReadData. Received %@", readString);
+    //NSLog(@"SimulatedSwitchamajigIR: didReadData. Received %@", readString);
     BOOL isPuckStatus = [[NSPredicate predicateWithFormat:@"SELF contains \"GET /puckStatus.xml\""] evaluateWithObject:readString];
     if(isPuckStatus) {
-        NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> </puckdata>", [self deviceName]];
-        NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
-        NSLog(@"header = %@", header);
-        NSLog(@"response = %@", response);
-        [sock writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
-        [sock writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+        numPuckStatusRequests++;
     }
 }
 
+- (void) returnPuckStatus {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> </puckdata>", [self deviceName]];
+    NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+    //NSLog(@"header = %@", header);
+    //NSLog(@"response = %@", response);
+    [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];    
+}
+- (void) resetPuckRequestCount {
+    numPuckStatusRequests = 0;
+}
+- (int) getPuckRequestCount {
+    return numPuckStatusRequests;
+}
 
 @end
 
