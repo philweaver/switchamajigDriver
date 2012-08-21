@@ -49,6 +49,13 @@
     [connection setSJData:[NSMutableData data]];
 }
 
+- (void) startIRLearning {
+    NSString *learnIRRequestString = [NSString stringWithFormat:@"http://%@/learnIR.xml", [self hostName]];
+    NSURLRequest *learnIRRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:learnIRRequestString] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:SWITCHAMAJIG_TIMEOUT];
+    SJAugmentedNSURLConnection *connection = [[SJAugmentedNSURLConnection alloc] initWithRequest:learnIRRequest delegate:self];
+    [connection setSJData:[NSMutableData data]];
+}
+
 // NSURLConnection Delegate
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     SJAugmentedNSURLConnection *augConnection = (SJAugmentedNSURLConnection *)connection;
@@ -86,8 +93,47 @@
         NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting name: %@", error);
         return;
     }
-    if([learnIRNodes count]) {
-        // Send learn IR codes to delegate
+    DDXMLNode *irNode;
+    for (irNode in learnIRNodes){
+        NSError *statusError, *learnDataError;
+        NSArray *statusNodes = [irNode nodesForXPath:@".//status" error:&statusError];
+        NSArray *learnedDataNodes = [irNode nodesForXPath:@".//learnedData" error:&learnDataError];
+        if(statusError || learnDataError || ([statusNodes count] != 1) || ([learnedDataNodes count] != 1)) {
+            NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error parsing ir status %@ %@ %d %d", statusError, learnDataError, [statusNodes count], [learnedDataNodes count]);
+            return;
+        }
+        DDXMLElement *statusElement = (DDXMLElement *)[statusNodes objectAtIndex:0];
+        DDXMLElement *learnedDataElement = (DDXMLElement *)[learnedDataNodes objectAtIndex:0];
+        DDXMLNode *messageNumAttribute = [statusElement attributeForName:@"messageNum"];
+        DDXMLNode *reasonCodeAttribute = [statusElement attributeForName:@"reasonCode"];
+        DDXMLNode *learnedDataAttribute = [learnedDataElement attributeForName:@"data"];
+        if(!messageNumAttribute || !reasonCodeAttribute || !learnedDataAttribute) {
+            NSLog(@"Unable to parse ir status elements. Response = %@ and %@", [statusElement XMLString], [learnedDataElement XMLString]);
+            return;
+        }
+        //NSString *messageNumString = [messageNumAttribute stringValue];
+        NSString *reasonCodeString = [reasonCodeAttribute stringValue];
+        NSString *learnedDataString = [learnedDataAttribute stringValue];
+        NSScanner *reasonCodeScan = [[NSScanner alloc] initWithString:reasonCodeString];
+        int reasonCode;
+        bool reasonCodeOK = [reasonCodeScan scanInt:&reasonCode];
+        if(!reasonCodeOK) {
+            NSLog(@"Unable to extract integer reason code from %@", reasonCodeString);
+            return;
+        }
+        if(reasonCode) {
+            // This is an actual error from the device. Report it.
+            if([[self delegate] respondsToSelector:@selector(SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:error:)]) {
+                NSError *irError = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorIR userInfo:nil];
+                id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
+                [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:irError];
+            }
+        }
+        // Reason code is OK. Return the IR command
+        if([[self delegate] respondsToSelector:@selector(SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:irCommand:)]) {
+            id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
+            [theDelegate SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:self irCommand:learnedDataString];
+        }
     }
 }
 
@@ -285,6 +331,10 @@
         NSRange commandRange = [readString rangeOfString:@"<docommand"];
         lastCommandReceived = [readString substringFromIndex:commandRange.location];
     }
+    BOOL islearnIR = [[NSPredicate predicateWithFormat:@"SELF contains \"GET /learnIR\""] evaluateWithObject:readString];
+    if(islearnIR) {
+        numIRLearnRequests++;
+    }
     // Keep reading
     [sock readDataWithTimeout:-1 tag:0];
 }
@@ -297,11 +347,36 @@
     [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
     [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];    
 }
+- (void) returnIRLearningCommand:(NSString*)command {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"77\" reasonCode=\"0\" /> <learnedData data=\"%@\"/> </learnIRResponse>", command];
+    NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+    //NSLog(@"header = %@", header);
+    //NSLog(@"response = %@", response);
+    [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+}
+
+- (void) returnIRLearningError {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"77\" reasonCode=\"1\" /> <learnedData data=\"none\"/> </learnIRResponse>"];
+    NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+    //NSLog(@"header = %@", header);
+    //NSLog(@"response = %@", response);
+    [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+}
+
+
 - (void) resetPuckRequestCount {
     numPuckStatusRequests = 0;
 }
 - (int) getPuckRequestCount {
     return numPuckStatusRequests;
+}
+- (void) resetIRLearnRequestCount {
+    numIRLearnRequests = 0;
+}
+- (int) getIRLearnRequestCount {
+    return numIRLearnRequests;
 }
 - (NSString *) lastCommand {
     return lastCommandReceived;

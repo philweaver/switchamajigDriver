@@ -34,6 +34,15 @@ bool connectedCallbackCalled, disconnectedCallbackCalled;
 - (void) SwitchamajigDeviceDriverDisconnected:(id)deviceDriver withError:(NSError*)error {
     disconnectedCallbackCalled = true;
 }
+// OPTIONAL IR DELEGATE
+NSString *lastLearnedIRCommand;
+bool learningIRError;
+- (void) SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:(id)deviceDriver irCommand:(NSString *)irCommand {
+    lastLearnedIRCommand = irCommand;
+}
+- (void) SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:(id) deviceDriver error:(NSError *)error {
+    learningIRError = true;
+}
 
 // SwitchamajigDeviceListenerDelegate
 bool batteryWarning;
@@ -312,6 +321,33 @@ bool listenerErrorReceieved;
     NSString *lastIRCommand = [irDevice lastCommand];
     STAssertTrue([lastIRCommand isEqualToString:@"<docommand key=\"hoopy\" repeat=\"0\" seq=\"0\" command=\"frood\" ir_data=\"shrubbery\" ch=\"0\"></docommand>"], @"Failed to send docommand. Current lastIRCommand = %@", lastIRCommand);
 }
+
+- (void)test007IRDriverLearning
+{
+    SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25011];
+    [irDevice startListening];
+    SwitchamajigIRDeviceDriver *driver = [[SwitchamajigIRDeviceDriver alloc] initWithHostname:@"localhost:25011"];
+    [driver setDelegate:self];
+    learningIRError = false;
+    [driver startIRLearning];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    int numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 1), @"IR count request wrong (is %d).", numIRLearningRequests);
+    [irDevice returnIRLearningCommand:@"L123 4567"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue([lastLearnedIRCommand isEqualToString:@"L123 4567"], @"IR command wrong (is %@).", lastLearnedIRCommand);
+    STAssertFalse(learningIRError, @"Got unexpected learning IR error");
+    [driver startIRLearning];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 2), @"IR count request wrong (is %d).", numIRLearningRequests);
+    [irDevice returnIRLearningError];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(learningIRError, @"Failed to get IR error.");
+}
+
+
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the
 // controller isn't serviced fast enough

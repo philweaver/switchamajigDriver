@@ -14,6 +14,7 @@ const NSString *SwitchamajigDriverErrorDomain;
 #define SJDriverErrorBadArguments 101
 #define SJDriverErrorNullSocket 1000
 #define SJDriverErrorConfigProblem 1001
+#define SJDriverErrorIR 2000
 
 @protocol SwitchamajigDeviceDriverDelegate <NSObject>
 @required
