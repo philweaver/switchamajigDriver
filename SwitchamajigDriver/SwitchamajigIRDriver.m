@@ -357,7 +357,7 @@
 }
 
 - (void) returnIRLearningError {
-    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"77\" reasonCode=\"1\" /> <learnedData data=\"none\"/> </learnIRResponse>"];
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"70\" reasonCode=\"6\" /> <learnedData data=\"\"/> </learnIRResponse>"];
     NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
     //NSLog(@"header = %@", header);
     //NSLog(@"response = %@", response);
