@@ -12,9 +12,6 @@
 #define SQ_PORTNUM 80
 #define SWITCHAMAJIG_TIMEOUT 5
 
-@implementation SwitchamajigIRDeviceDriver
-@end
-
 @interface SJAugmentedNSURLConnection : NSURLConnection {
     
 }
@@ -27,6 +24,75 @@
 @synthesize SJData;
 
 @end
+
+
+@implementation SwitchamajigIRDeviceDriver
+@synthesize hostName;
+
+- (id) initWithHostname:(NSString *)newHostName {
+    self = [super init];
+    [self setHostName:newHostName];
+    return self;
+}
+
+- (void) issueCommandFromXMLNode:(DDXMLNode*) xmlCommandNode error:(NSError *__autoreleasing *)error {
+    NSString *commandString = [NSString stringWithFormat:@"http://%@/docmnd.xml", [self hostName]];
+    NSMutableURLRequest *commandRequest=[[NSMutableURLRequest alloc] init];
+    [commandRequest setURL:[NSURL URLWithString:commandString]];
+    [commandRequest setCachePolicy:NSURLRequestReloadIgnoringCacheData];
+    [commandRequest setTimeoutInterval:SWITCHAMAJIG_TIMEOUT];
+    [commandRequest setHTTPMethod:@"POST"];
+    NSString *commandXMLString = [xmlCommandNode XMLString];
+    //NSLog(@"commandXMLString = %@", commandXMLString);
+    [commandRequest setHTTPBody:[commandXMLString dataUsingEncoding:NSUTF8StringEncoding]];
+    SJAugmentedNSURLConnection *connection = [[SJAugmentedNSURLConnection alloc] initWithRequest:commandRequest delegate:self];
+    [connection setSJData:[NSMutableData data]];
+}
+
+// NSURLConnection Delegate
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    SJAugmentedNSURLConnection *augConnection = (SJAugmentedNSURLConnection *)connection;
+    [[augConnection SJData] setLength:0];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    SJAugmentedNSURLConnection *augConnection = (SJAugmentedNSURLConnection *)connection;
+    [[augConnection SJData] appendData:data];
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    // Log error
+    NSLog(@"SwitchamajigIRDeviceListener: connection didFailWithError - %@ %@",
+          [error localizedDescription],
+          [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
+    [[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)conn
+{
+    //NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading. Received %d bytes of data",[puckRequestData length]);
+    SJAugmentedNSURLConnection *connection = (SJAugmentedNSURLConnection *)conn;
+    NSError *error;
+    DDXMLDocument *deviceResponse = [[DDXMLDocument alloc] initWithData:[connection SJData] options:0 error:&error];
+    
+    if(error) {
+        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: xml document error %@", error);
+        return;
+    }
+    NSArray *learnIRNodes = [deviceResponse nodesForXPath:@".//learnIRResponse" error:&error];
+    if(error) {
+        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting name: %@", error);
+        return;
+    }
+    if([learnIRNodes count]) {
+        // Send learn IR codes to delegate
+    }
+}
+
+@end
+
 
 @implementation SwitchamajigIRDeviceListener
 
@@ -209,11 +275,18 @@
 {
     //NSLog(@"Simulated Switchamajig Controller received packet of %d bytes.", [data length]);
     NSString *readString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    //NSLog(@"SimulatedSwitchamajigIR: didReadData. Received %@", readString);
+    NSLog(@"SimulatedSwitchamajigIR: didReadData. Received %@", readString);
     BOOL isPuckStatus = [[NSPredicate predicateWithFormat:@"SELF contains \"GET /puckStatus.xml\""] evaluateWithObject:readString];
     if(isPuckStatus) {
         numPuckStatusRequests++;
     }
+    BOOL isDoCommand = [[NSPredicate predicateWithFormat:@"SELF contains \"<docommand\""] evaluateWithObject:readString];
+    if(isDoCommand) {
+        NSRange commandRange = [readString rangeOfString:@"<docommand"];
+        lastCommandReceived = [readString substringFromIndex:commandRange.location];
+    }
+    // Keep reading
+    [sock readDataWithTimeout:-1 tag:0];
 }
 
 - (void) returnPuckStatus {
@@ -230,6 +303,8 @@
 - (int) getPuckRequestCount {
     return numPuckStatusRequests;
 }
-
+- (NSString *) lastCommand {
+    return lastCommandReceived;
+}
 @end
 

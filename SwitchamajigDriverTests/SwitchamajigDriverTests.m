@@ -209,7 +209,6 @@ bool listenerErrorReceieved;
     [[NSRunLoop currentRunLoop] runUntilDate:oneSecondFromNow];
     STAssertTrue(listenerErrorReceieved, @"Should receive error when two listeners conflict.");
 }
-#endif
 
 - (void) test005IRListenerBasicOperation {
     // Basic test with a single unit
@@ -289,8 +288,30 @@ bool listenerErrorReceieved;
     STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
     
 }
+#endif
 
-
+- (void)test006IRDriverBasicOperation
+{
+    SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25010];
+    [irDevice startListening];
+    SwitchamajigIRDeviceDriver *driver = [[SwitchamajigIRDeviceDriver alloc] initWithHostname:@"localhost:25010"];
+    [driver setDelegate:self];
+    
+    // Send a do command
+    NSError *err;
+    DDXMLDocument *xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <docommand key=\"hoopy\" repeat=\"0\" seq=\"0\" command=\"frood\" ir_data=\"shrubbery\" ch=\"0\"></docommand>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for do command: %@", err);
+    }
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    //NSLog(@"commandNodeString = %@", [commandNode XMLString]);
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    // Check that the command was received by the simulated device
+    NSString *lastIRCommand = [irDevice lastCommand];
+    STAssertTrue([lastIRCommand isEqualToString:@"<docommand key=\"hoopy\" repeat=\"0\" seq=\"0\" command=\"frood\" ir_data=\"shrubbery\" ch=\"0\"></docommand>"], @"Failed to send docommand. Current lastIRCommand = %@", lastIRCommand);
+}
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the
 // controller isn't serviced fast enough

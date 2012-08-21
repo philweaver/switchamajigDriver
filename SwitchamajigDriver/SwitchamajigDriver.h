@@ -15,7 +15,8 @@ const NSString *SwitchamajigDriverErrorDomain;
 #define SJDriverErrorNullSocket 1000
 #define SJDriverErrorConfigProblem 1001
 
-@protocol SwitchamajigDeviceDriverDelegate <NSObject> 
+@protocol SwitchamajigDeviceDriverDelegate <NSObject>
+@required
 - (void) SwitchamajigDeviceDriverConnected:(id)deviceDriver;
 - (void) SwitchamajigDeviceDriverDisconnected:(id)deviceDriver withError:(NSError*)error;
 @end
@@ -42,6 +43,12 @@ const NSString *SwitchamajigDriverErrorDomain;
 }
 @property BOOL useUDP;
 
+@end
+
+@protocol SwitchamajigIRDeviceDriverDelegate <SwitchamajigDeviceDriverDelegate>
+@optional
+- (void) SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:(id)deviceDriver irCommand:(NSString *)irCommand;
+- (void) SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:(id) deviceDriver error:(NSError *)error;
 @end
 
 @interface SwitchamajigIRDeviceDriver : SwitchamajigDriver {

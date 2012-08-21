@@ -11,6 +11,7 @@
 
 @interface SwitchamajigIRDeviceDriver () {
 }
+@property (nonatomic, strong) NSString *hostName;
 @end
 
 @interface SwitchamajigIRDeviceListener () <NSNetServiceBrowserDelegate, NSNetServiceDelegate> {
@@ -23,12 +24,14 @@
     GCDAsyncSocket *listenSocket;
     GCDAsyncSocket *connectedSocket;
     int numPuckStatusRequests;
+    NSString *lastCommandReceived;
 }
 - (void) announcePresenceToListener:(SwitchamajigIRDeviceListener*)listener withHostName:(NSString *)hostname;
 - (void) startListening;
 - (void) returnPuckStatus;
 - (void) resetPuckRequestCount;
 - (int) getPuckRequestCount;
+- (NSString *) lastCommand;
 @property int port;
 @property NSString *deviceName;
 @end
