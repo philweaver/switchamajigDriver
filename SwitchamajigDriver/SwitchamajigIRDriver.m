@@ -71,7 +71,7 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
     // Log error
-    NSLog(@"SwitchamajigIRDeviceListener: connection didFailWithError - %@ %@",
+    NSLog(@"SwitchamajigIRDeviceDriver: connection didFailWithError - %@ %@",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
     [[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
@@ -135,6 +135,7 @@
             [theDelegate SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:self irCommand:learnedDataString];
         }
     }
+    [[self delegate] SwitchamajigDeviceDriverConnected:self];
 }
 
 @end
@@ -310,6 +311,11 @@
     }
 }
 
+- (void) stopListening {
+    [connectedSocket disconnect];
+    [listenSocket disconnect];
+}
+
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket
 {
     connectedSocket = newSocket;
@@ -330,6 +336,12 @@
     if(isDoCommand) {
         NSRange commandRange = [readString rangeOfString:@"<docommand"];
         lastCommandReceived = [readString substringFromIndex:commandRange.location];
+        NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <execCmndResponse> <status messageNum=\"70\" reasonCode=\"0\" /> </execCmndResponse>"];
+        NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+        //NSLog(@"header = %@", header);
+        //NSLog(@"response = %@", response);
+        [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+        [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
     }
     BOOL islearnIR = [[NSPredicate predicateWithFormat:@"SELF contains \"GET /learnIR\""] evaluateWithObject:readString];
     if(islearnIR) {

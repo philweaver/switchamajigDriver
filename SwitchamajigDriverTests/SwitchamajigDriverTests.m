@@ -11,7 +11,7 @@
 #import "SwitchamajigIRDriver.h"
 @implementation SwitchamajigDriverTests
 
-#define RUN_ALL_TESTS 0
+#define RUN_ALL_TESTS 1
 - (void)setUp
 {
     [super setUp];
@@ -297,7 +297,6 @@ bool listenerErrorReceieved;
     STAssertFalse(listenerErrorReceieved, @"Received unexpected listener error.");
     
 }
-#endif
 
 - (void)test006IRDriverBasicOperation
 {
@@ -346,7 +345,48 @@ bool listenerErrorReceieved;
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(learningIRError, @"Failed to get IR error.");
 }
+#endif
 
+- (void)test008IRDriverErrors {
+    disconnectedCallbackCalled = false;
+    SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25012];
+    [irDevice startListening];
+    SwitchamajigIRDeviceDriver *driver = [[SwitchamajigIRDeviceDriver alloc] initWithHostname:@"255.255.255.255"];
+    [driver setDelegate:self];
+    NSError *err;
+    DDXMLDocument *xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <docommand key=\"hoopy\" repeat=\"0\" seq=\"0\" command=\"frood\" ir_data=\"shrubbery\" ch=\"0\"></docommand>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for docommand: %@", err);
+    }
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(disconnectedCallbackCalled, @"No disconnect callback on bad hostname.");
+    
+    // Now connect properly
+    connectedCallbackCalled = false;
+    driver = [[SwitchamajigIRDeviceDriver alloc] initWithHostname:@"localhost:25012"];
+    [driver setDelegate:self];
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(connectedCallbackCalled, @"Did not receive connect callback.");
+    // Than shut down controller
+    [irDevice stopListening];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    disconnectedCallbackCalled = false;
+    connectedCallbackCalled = false;
+    // Send command
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    // Wait for command
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error on do command after ir device shut down.");
+    disconnectedCallbackCalled = false;
+    [driver startIRLearning];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertFalse(connectedCallbackCalled, @"Received connect callback after ir device shut down.");
+    STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error on learn IR after ir device shut down.");
+}
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the

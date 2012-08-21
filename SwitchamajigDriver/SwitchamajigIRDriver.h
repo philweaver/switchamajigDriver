@@ -30,6 +30,7 @@
 }
 - (void) announcePresenceToListener:(SwitchamajigIRDeviceListener*)listener withHostName:(NSString *)hostname;
 - (void) startListening;
+- (void) stopListening;
 - (void) returnPuckStatus;
 - (void) resetPuckRequestCount;
 - (int) getPuckRequestCount;
