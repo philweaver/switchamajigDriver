@@ -1,3 +1,6 @@
 [submodule "SwitchamajigDriver/CocoaAsyncSocket"]
 	path = SwitchamajigDriver/CocoaAsyncSocket
 	url = https://github.com/robbiehanson/CocoaAsyncSocket.git
+[submodule "SwitchamajigDriver/fmdb"]
+	path = SwitchamajigDriver/fmdb
+	url = https://github.com/ccgus/fmdb.git
