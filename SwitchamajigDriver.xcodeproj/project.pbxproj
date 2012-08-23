@@ -9,6 +9,20 @@
 /* Begin PBXBuildFile section */
 		AD59BD8115DEF673001D5BFF /* SwitchamajigIRDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */; };
 		AD59BD8215DEF673001D5BFF /* SwitchamajigIRDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */; };
+		AD59BDC415E54EBD001D5BFF /* FMDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BDB915E54EBC001D5BFF /* FMDatabase.h */; };
+		AD59BDC515E54EBD001D5BFF /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDBA15E54EBC001D5BFF /* FMDatabase.m */; };
+		AD59BDC615E54EBD001D5BFF /* FMDatabaseAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BDBB15E54EBC001D5BFF /* FMDatabaseAdditions.h */; };
+		AD59BDC715E54EBD001D5BFF /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDBC15E54EBC001D5BFF /* FMDatabaseAdditions.m */; };
+		AD59BDC815E54EBD001D5BFF /* FMDatabasePool.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BDBD15E54EBC001D5BFF /* FMDatabasePool.h */; };
+		AD59BDC915E54EBD001D5BFF /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDBE15E54EBC001D5BFF /* FMDatabasePool.m */; };
+		AD59BDCA15E54EBD001D5BFF /* FMDatabaseQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BDBF15E54EBC001D5BFF /* FMDatabaseQueue.h */; };
+		AD59BDCB15E54EBD001D5BFF /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDC015E54EBC001D5BFF /* FMDatabaseQueue.m */; };
+		AD59BDCC15E54EBD001D5BFF /* fmdb.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDC115E54EBC001D5BFF /* fmdb.m */; };
+		AD59BDCD15E54EBD001D5BFF /* FMResultSet.h in Headers */ = {isa = PBXBuildFile; fileRef = AD59BDC215E54EBC001D5BFF /* FMResultSet.h */; };
+		AD59BDCE15E54EBD001D5BFF /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = AD59BDC315E54EBD001D5BFF /* FMResultSet.m */; };
+		AD59BDD015E54F34001D5BFF /* IRDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = AD59BDCF15E54F34001D5BFF /* IRDB.sqlite */; };
+		AD59BDD215E56314001D5BFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD59BDD115E56314001D5BFF /* libsqlite3.dylib */; };
+		AD59BDD315E5636F001D5BFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD59BDD115E56314001D5BFF /* libsqlite3.dylib */; };
 		AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
 		AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */; };
 		AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0491573055500D0BC98 /* SenTestingKit.framework */; };
@@ -45,6 +59,19 @@
 /* Begin PBXFileReference section */
 		AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchamajigIRDriver.h; sourceTree = "<group>"; };
 		AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigIRDriver.m; sourceTree = "<group>"; };
+		AD59BDB915E54EBC001D5BFF /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMDatabase.h; path = fmdb/src/FMDatabase.h; sourceTree = "<group>"; };
+		AD59BDBA15E54EBC001D5BFF /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMDatabase.m; path = fmdb/src/FMDatabase.m; sourceTree = "<group>"; };
+		AD59BDBB15E54EBC001D5BFF /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMDatabaseAdditions.h; path = fmdb/src/FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		AD59BDBC15E54EBC001D5BFF /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMDatabaseAdditions.m; path = fmdb/src/FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		AD59BDBD15E54EBC001D5BFF /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMDatabasePool.h; path = fmdb/src/FMDatabasePool.h; sourceTree = "<group>"; };
+		AD59BDBE15E54EBC001D5BFF /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMDatabasePool.m; path = fmdb/src/FMDatabasePool.m; sourceTree = "<group>"; };
+		AD59BDBF15E54EBC001D5BFF /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMDatabaseQueue.h; path = fmdb/src/FMDatabaseQueue.h; sourceTree = "<group>"; };
+		AD59BDC015E54EBC001D5BFF /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMDatabaseQueue.m; path = fmdb/src/FMDatabaseQueue.m; sourceTree = "<group>"; };
+		AD59BDC115E54EBC001D5BFF /* fmdb.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = fmdb.m; path = fmdb/src/fmdb.m; sourceTree = "<group>"; };
+		AD59BDC215E54EBC001D5BFF /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FMResultSet.h; path = fmdb/src/FMResultSet.h; sourceTree = "<group>"; };
+		AD59BDC315E54EBD001D5BFF /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMResultSet.m; path = fmdb/src/FMResultSet.m; sourceTree = "<group>"; };
+		AD59BDCF15E54F34001D5BFF /* IRDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = IRDB.sqlite; sourceTree = "<group>"; };
+		AD59BDD115E56314001D5BFF /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwitchamajigDriver.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8CF03B1573055500D0BC98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
@@ -77,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD59BDD215E56314001D5BFF /* libsqlite3.dylib in Frameworks */,
 				AD921AEC15792DAA00940981 /* CFNetwork.framework in Frameworks */,
 				AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */,
 			);
@@ -86,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD59BDD315E5636F001D5BFF /* libsqlite3.dylib in Frameworks */,
 				AD921AFF157C992100940981 /* UIKit.framework in Frameworks */,
 				AD921AF71579342800940981 /* libxml2.dylib in Frameworks */,
 				AD921AF5157933F200940981 /* libKissXML.a in Frameworks */,
@@ -103,6 +132,7 @@
 		AD8CF02D1573055500D0BC98 = {
 			isa = PBXGroup;
 			children = (
+				AD59BDD115E56314001D5BFF /* libsqlite3.dylib */,
 				AD921AFE157C992100940981 /* UIKit.framework */,
 				AD921AF61579342800940981 /* libxml2.dylib */,
 				AD921AF4157933F200940981 /* libKissXML.a */,
@@ -137,6 +167,17 @@
 		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
 			isa = PBXGroup;
 			children = (
+				AD59BDB915E54EBC001D5BFF /* FMDatabase.h */,
+				AD59BDBA15E54EBC001D5BFF /* FMDatabase.m */,
+				AD59BDBB15E54EBC001D5BFF /* FMDatabaseAdditions.h */,
+				AD59BDBC15E54EBC001D5BFF /* FMDatabaseAdditions.m */,
+				AD59BDBD15E54EBC001D5BFF /* FMDatabasePool.h */,
+				AD59BDBE15E54EBC001D5BFF /* FMDatabasePool.m */,
+				AD59BDBF15E54EBC001D5BFF /* FMDatabaseQueue.h */,
+				AD59BDC015E54EBC001D5BFF /* FMDatabaseQueue.m */,
+				AD59BDC115E54EBC001D5BFF /* fmdb.m */,
+				AD59BDC215E54EBC001D5BFF /* FMResultSet.h */,
+				AD59BDC315E54EBD001D5BFF /* FMResultSet.m */,
 				ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */,
 				ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */,
 				AD921AFA157C7B1F00940981 /* GCDAsyncUdpSocket.h */,
@@ -175,6 +216,7 @@
 		AD8CF0521573055500D0BC98 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				AD59BDCF15E54F34001D5BFF /* IRDB.sqlite */,
 				AD8CF0531573055500D0BC98 /* SwitchamajigDriverTests-Info.plist */,
 				AD8CF0541573055500D0BC98 /* InfoPlist.strings */,
 			);
@@ -193,6 +235,11 @@
 				AD921AFC157C7B1F00940981 /* GCDAsyncUdpSocket.h in Headers */,
 				ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */,
 				AD59BD8115DEF673001D5BFF /* SwitchamajigIRDriver.h in Headers */,
+				AD59BDC415E54EBD001D5BFF /* FMDatabase.h in Headers */,
+				AD59BDC615E54EBD001D5BFF /* FMDatabaseAdditions.h in Headers */,
+				AD59BDC815E54EBD001D5BFF /* FMDatabasePool.h in Headers */,
+				AD59BDCA15E54EBD001D5BFF /* FMDatabaseQueue.h in Headers */,
+				AD59BDCD15E54EBD001D5BFF /* FMResultSet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +315,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD8CF0561573055500D0BC98 /* InfoPlist.strings in Resources */,
+				AD59BDD015E54F34001D5BFF /* IRDB.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,6 +348,12 @@
 				AD921AFD157C7B1F00940981 /* GCDAsyncUdpSocket.m in Sources */,
 				ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */,
 				AD59BD8215DEF673001D5BFF /* SwitchamajigIRDriver.m in Sources */,
+				AD59BDC515E54EBD001D5BFF /* FMDatabase.m in Sources */,
+				AD59BDC715E54EBD001D5BFF /* FMDatabaseAdditions.m in Sources */,
+				AD59BDC915E54EBD001D5BFF /* FMDatabasePool.m in Sources */,
+				AD59BDCB15E54EBD001D5BFF /* FMDatabaseQueue.m in Sources */,
+				AD59BDCC15E54EBD001D5BFF /* fmdb.m in Sources */,
+				AD59BDCE15E54EBD001D5BFF /* FMResultSet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

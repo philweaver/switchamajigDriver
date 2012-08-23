@@ -11,7 +11,7 @@
 #import "SwitchamajigIRDriver.h"
 @implementation SwitchamajigDriverTests
 
-#define RUN_ALL_TESTS 1
+#define RUN_ALL_TESTS 0
 - (void)setUp
 {
     [super setUp];
@@ -345,7 +345,6 @@ bool listenerErrorReceieved;
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(learningIRError, @"Failed to get IR error.");
 }
-#endif
 
 - (void)test008IRDriverErrors {
     disconnectedCallbackCalled = false;
@@ -387,6 +386,37 @@ bool listenerErrorReceieved;
     STAssertFalse(connectedCallbackCalled, @"Received connect callback after ir device shut down.");
     STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error on learn IR after ir device shut down.");
 }
+#endif
+
+- (void)test100IRDatabase {
+    NSError *error;
+    NSArray *brandsWithDatabaseUninitialized = [SwitchamajigIRDeviceDriver getIRDatabaseBrands];
+    STAssertNil(brandsWithDatabaseUninitialized, @"Uninitialized database should return nil");
+    NSString *irDatabasePath = [[NSBundle bundleForClass:[self class]]pathForResource:@"IRDB" ofType:@"sqlite"];
+    NSLog(@"Database path = %@", irDatabasePath);
+    [SwitchamajigIRDeviceDriver loadIRCodeDatabase:irDatabasePath error:&error];
+    STAssertNil(error, @"Error loading IR database: %@", error);
+    NSArray *brands = [SwitchamajigIRDeviceDriver getIRDatabaseBrands];
+    STAssertTrue([brands count] == 638, @"Expected 638 brands in database. Got %d", [brands count]);
+    STAssertTrue([brands containsObject:@"Sony"], @"Sony not in brands");
+    NSArray *SonyDevices = [SwitchamajigIRDeviceDriver getIRDatabaseDevicesForBrand:@"Sony"];
+    STAssertTrue([SonyDevices count] == 25, @"Expected 25 devices in database for Sony. Got %d", [SonyDevices count]);
+    STAssertTrue([SonyDevices containsObject:@"TV"], @"TV not in Sony devices");
+    NSArray *SonyTVFunctions = [SwitchamajigIRDeviceDriver getIRDatabaseFunctionsOnDevice:@"TV" forBrand:@"Sony"];
+    STAssertTrue([SonyTVFunctions count] == 181, @"Expected 181 functions for Sony TV. Got %d", [SonyTVFunctions count]);
+    STAssertTrue([SonyTVFunctions containsObject:@"VOLUME UP"], @"VOLUME UP not in Sony TV functions");
+    char irCommandBytes[800], expectedBytes[800];
+    NSString *irCommand = [SwitchamajigIRDeviceDriver irCodeForFunction:@"VOLUME UP" onDevice:@"TV" forBrand:@"Sony"];
+    [irCommand getCString:irCommandBytes maxLength:sizeof(irCommandBytes) encoding:NSUTF8StringEncoding];
+    STAssertTrue([irCommand isEqualToString:@"UT00006"], @"Command not what was expected. Got %@", irCommand);
+    // Command that has hex code
+    irCommand = [SwitchamajigIRDeviceDriver irCodeForFunction:@"NETFLIX" onDevice:@"TV" forBrand:@"Sony"];
+    [irCommand getCString:irCommandBytes maxLength:sizeof(irCommandBytes) encoding:NSUTF8StringEncoding];
+    NSString *expectedString = @"P7b64 79c4 fdf5 7f78 c44c ae1c f80d be9a 1b8a 7f35 1f7f e938 c9f8 d9c2 7dc6 c15a ea40 2b72 7e29 2850 eda3 49a7 74c3 0311 9045 0825 f4bb 54ac a2f1 718b 5008 bc94  ";
+    [expectedString getCString:expectedBytes maxLength:sizeof(expectedBytes) encoding:NSUTF8StringEncoding];
+    STAssertTrue([irCommand isEqualToString:expectedString], @"Command wrong. Expected %@ Got %@", expectedString, irCommand);
+}
+
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the

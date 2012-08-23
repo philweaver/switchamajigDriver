@@ -15,6 +15,7 @@ const NSString *SwitchamajigDriverErrorDomain;
 #define SJDriverErrorNullSocket 1000
 #define SJDriverErrorConfigProblem 1001
 #define SJDriverErrorIR 2000
+#define SJDriverErrorIRDatabase 2001
 
 @protocol SwitchamajigDeviceDriverDelegate <NSObject>
 @required
@@ -54,6 +55,11 @@ const NSString *SwitchamajigDriverErrorDomain;
 
 @interface SwitchamajigIRDeviceDriver : SwitchamajigDriver {
 }
++ (void) loadIRCodeDatabase:(NSString *)path error:(NSError **)error;
++ (NSString *) irCodeForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSArray *) getIRDatabaseBrands;
++ (NSArray *) getIRDatabaseDevicesForBrand:(NSString *)brand;
++ (NSArray *) getIRDatabaseFunctionsOnDevice:(NSString *)device forBrand:(NSString *)brand;
 @end
 
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
