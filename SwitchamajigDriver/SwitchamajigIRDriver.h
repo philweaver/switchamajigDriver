@@ -17,6 +17,7 @@
 
 @interface SwitchamajigIRDeviceListener () <NSNetServiceBrowserDelegate, NSNetServiceDelegate> {
     NSNetServiceBrowser *netServiceBrowser;
+    NSMutableArray *netServices;
 }
 
 @end

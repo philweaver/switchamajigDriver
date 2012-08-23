@@ -271,6 +271,7 @@ static FMDatabase *irDatabase;
         netServiceBrowser = [[NSNetServiceBrowser alloc] init];
         [netServiceBrowser setDelegate:self];
         [netServiceBrowser searchForServicesOfType:@"_sqp._tcp." inDomain:@""];
+        netServices = [[NSMutableArray alloc] initWithCapacity:5];
     }
     return self;
 }
@@ -282,7 +283,7 @@ static FMDatabase *irDatabase;
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didFindService:(NSNetService *)netService moreComing:(BOOL)moreServicesComing {
     NSLog(@"didFindService %@\n", [netService hostName]);
     [netService setDelegate:self];
-    //retainedNetService = netService; // Prevent netService from disappearing
+    [netServices addObject:netService];
     [netService resolveWithTimeout:0];
 }
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didNotSearch:(NSDictionary *)errorInfo {

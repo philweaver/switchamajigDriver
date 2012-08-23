@@ -11,7 +11,7 @@
 #import "SwitchamajigIRDriver.h"
 @implementation SwitchamajigDriverTests
 
-#define RUN_ALL_TESTS 0
+#define RUN_ALL_TESTS 1
 - (void)setUp
 {
     [super setUp];
