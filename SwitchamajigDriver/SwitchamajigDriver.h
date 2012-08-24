@@ -56,7 +56,7 @@ const NSString *SwitchamajigDriverErrorDomain;
 @interface SwitchamajigIRDeviceDriver : SwitchamajigDriver {
 }
 + (void) loadIRCodeDatabase:(NSString *)path error:(NSError **)error;
-+ (NSString *) irCodeForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSArray *) irCodesForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand;
 + (NSArray *) getIRDatabaseBrands;
 + (NSArray *) getIRDatabaseDevicesForBrand:(NSString *)brand;
 + (NSArray *) getIRDatabaseFunctionsOnDevice:(NSString *)device forBrand:(NSString *)brand;

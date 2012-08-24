@@ -406,11 +406,15 @@ bool listenerErrorReceieved;
     STAssertTrue([SonyTVFunctions count] == 181, @"Expected 181 functions for Sony TV. Got %d", [SonyTVFunctions count]);
     STAssertTrue([SonyTVFunctions containsObject:@"VOLUME UP"], @"VOLUME UP not in Sony TV functions");
     char irCommandBytes[800], expectedBytes[800];
-    NSString *irCommand = [SwitchamajigIRDeviceDriver irCodeForFunction:@"VOLUME UP" onDevice:@"TV" forBrand:@"Sony"];
+    NSArray *irCommands = [SwitchamajigIRDeviceDriver irCodesForFunction:@"VOLUME UP" onDevice:@"TV" forBrand:@"Sony"];
+    STAssertTrue([irCommands count] == 5, @"Count for Sony TV Volume Up is %d", [irCommands count]);
+    NSString *irCommand = [irCommands objectAtIndex:0];
     [irCommand getCString:irCommandBytes maxLength:sizeof(irCommandBytes) encoding:NSUTF8StringEncoding];
     STAssertTrue([irCommand isEqualToString:@"UT00006"], @"Command not what was expected. Got %@", irCommand);
     // Command that has hex code
-    irCommand = [SwitchamajigIRDeviceDriver irCodeForFunction:@"NETFLIX" onDevice:@"TV" forBrand:@"Sony"];
+    irCommands = [SwitchamajigIRDeviceDriver irCodesForFunction:@"NETFLIX" onDevice:@"TV" forBrand:@"Sony"];
+    STAssertTrue([irCommands count] == 1, @"Count for Sony TV Netflix is %d", [irCommands count]);
+    irCommand = [irCommands objectAtIndex:0];
     [irCommand getCString:irCommandBytes maxLength:sizeof(irCommandBytes) encoding:NSUTF8StringEncoding];
     NSString *expectedString = @"P7b64 79c4 fdf5 7f78 c44c ae1c f80d be9a 1b8a 7f35 1f7f e938 c9f8 d9c2 7dc6 c15a ea40 2b72 7e29 2850 eda3 49a7 74c3 0311 9045 0825 f4bb 54ac a2f1 718b 5008 bc94  ";
     [expectedString getCString:expectedBytes maxLength:sizeof(expectedBytes) encoding:NSUTF8StringEncoding];

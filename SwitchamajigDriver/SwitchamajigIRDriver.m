@@ -234,7 +234,7 @@ static FMDatabase *irDatabase;
     return functions;
 }
 
-+ (NSString *) irCodeForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand {
++ (NSArray *) irCodesForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand {
     if(!irDatabase)
         return nil;
     NSString *brandIDString = [SwitchamajigIRDeviceDriver getBrandIdForBrand:brand];
@@ -246,12 +246,13 @@ static FMDatabase *irDatabase;
     // First query: look for UEI codes
     NSString *query = [NSString stringWithFormat:@"select distinct ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"U\"", brandIDString, deviceIDString, function];
     FMResultSet *queryResults = [irDatabase executeQuery:query];
+    NSMutableArray *irCodes = [[NSMutableArray alloc] initWithCapacity:10];
     while([queryResults next]) {
         NSString *ueiSetupCode = [queryResults stringForColumn:@"ueisetupcode"];
         NSString *ueiFunctionNumber = [queryResults stringForColumn:@"ircode"];
         NSString *irCode = [NSString stringWithFormat:@"UT%@%@", ueiSetupCode, ueiFunctionNumber];
         if(ueiSetupCode && ueiFunctionNumber)
-            return irCode;
+            [irCodes addObject:irCode];
     }
     // If we didn't return, look for hex codes
     query = [NSString stringWithFormat:@"select distinct ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"O\"", brandIDString, deviceIDString, function];
@@ -259,8 +260,10 @@ static FMDatabase *irDatabase;
     while([queryResults next]) {
         NSString *irCode = [queryResults stringForColumn:@"ircode"];
         if(irCode)
-            return irCode;
+            [irCodes addObject:irCode];
     }
+    if([irCodes count])
+        return irCodes;
     return nil;
 }
 
