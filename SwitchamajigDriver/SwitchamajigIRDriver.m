@@ -50,8 +50,14 @@ static FMDatabase *irDatabase;
     NSString *commandXMLString = [xmlCommandNode XMLString];
     //NSLog(@"commandXMLString = %@", commandXMLString);
     [commandRequest setHTTPBody:[commandXMLString dataUsingEncoding:NSUTF8StringEncoding]];
-    SJAugmentedNSURLConnection *connection = [[SJAugmentedNSURLConnection alloc] initWithRequest:commandRequest delegate:self];
+    SJAugmentedNSURLConnection *connection = [[SJAugmentedNSURLConnection alloc] initWithRequest:commandRequest delegate:self startImmediately:NO];
     [connection setSJData:[NSMutableData data]];
+    if(!connection) {
+        NSLog(@"SwitchamajigIRDeviceDriver: issueCommandFromXMLNode: connection is null");
+    }
+    [connection scheduleInRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    [connection setSJData:[NSMutableData data]];
+    [connection start];
 }
 
 - (void) startIRLearning {
@@ -281,10 +287,10 @@ static FMDatabase *irDatabase;
     NSLog(@"didFindDomain: %@\n", domainName);
 }
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didFindService:(NSNetService *)netService moreComing:(BOOL)moreServicesComing {
-    NSLog(@"didFindService %@\n", [netService hostName]);
+    NSLog(@"didFindService %@. Resolving with timeout.\n", [netService hostName]);
     [netService setDelegate:self];
     [netServices addObject:netService];
-    [netService resolveWithTimeout:0];
+    [netService resolveWithTimeout:10];
 }
 - (void)netServiceBrowser:(NSNetServiceBrowser *)netServiceBrowser didNotSearch:(NSDictionary *)errorInfo {
     NSLog(@"didNotSearch: %@ %@\n", [errorInfo objectForKey:NSNetServicesErrorCode], [errorInfo objectForKey:NSNetServicesErrorDomain]);
@@ -323,11 +329,12 @@ static FMDatabase *irDatabase;
 }
 
 - (void)netServiceDidResolveAddress:(NSNetService *)sender {
+    NSLog(@"netServiceDidResolveAddress\n");
     // We've found a candidate for a Switchamajig IR. Send it a "puckstatus" request. We'll know from
     // the response if this is a true IR unit
     NSString *hostName = [NSString stringWithFormat:@"%@:%d", [sender hostName], [sender port]];
     //NSLog(@"hostname %@", hostName);
-    NSString *puckStatusRequestString = [NSString stringWithFormat:@"http://%@:%d/puckStatus.xml", [sender hostName], [sender port]];
+    NSString *puckStatusRequestString = [NSString stringWithFormat:@"http://%@/puckStatus.xml", hostName];
     NSURLRequest *puckStatusRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:puckStatusRequestString] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:SWITCHAMAJIG_TIMEOUT];
     SJAugmentedNSURLConnection *puckStatusConnectionAug = [[SJAugmentedNSURLConnection alloc] initWithRequest:puckStatusRequest delegate:self];
     if(!puckStatusConnectionAug) {
