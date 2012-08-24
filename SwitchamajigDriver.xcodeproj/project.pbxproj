@@ -188,9 +188,9 @@
 				AD921ADF15773B3A00940981 /* SwitchamajigControllerDeviceDriver.h */,
 				AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */,
 				AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */,
-				AD8CF03E1573055500D0BC98 /* Supporting Files */,
-				AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */,
 				AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */,
+				AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */,
+				AD8CF03E1573055500D0BC98 /* Supporting Files */,
 			);
 			path = SwitchamajigDriver;
 			sourceTree = "<group>";
