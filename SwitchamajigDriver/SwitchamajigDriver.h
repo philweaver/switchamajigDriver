@@ -56,10 +56,11 @@ const NSString *SwitchamajigDriverErrorDomain;
 @interface SwitchamajigIRDeviceDriver : SwitchamajigDriver {
 }
 + (void) loadIRCodeDatabase:(NSString *)path error:(NSError **)error;
-+ (NSArray *) irCodesForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSString *) irCodeForFunction:(NSString *)function inCodeSet:(NSString*) codeSet onDevice:(NSString *)device forBrand:(NSString *)brand;
 + (NSArray *) getIRDatabaseBrands;
 + (NSArray *) getIRDatabaseDevicesForBrand:(NSString *)brand;
-+ (NSArray *) getIRDatabaseFunctionsOnDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSArray *) getIRDatabaseCodeSetsOnDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSArray *) getIRDatabaseFunctionsInCodeSet:(NSString *)codeSet onDevice:(NSString *)device forBrand:(NSString *)brand;
 @end
 
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {

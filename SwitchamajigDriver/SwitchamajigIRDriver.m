@@ -188,6 +188,24 @@ static FMDatabase *irDatabase;
     return deviceIDString;
 }
 
++ (NSString *) getCodeSetIdForCodeSet:(NSString*)codeSet onDevice:(NSString *)device forBrand:(NSString *)brand {
+    NSString *brandIDString = [SwitchamajigIRDeviceDriver getBrandIdForBrand:brand];
+    if(!brandIDString)
+        return nil;
+    NSString *deviceIDString = [SwitchamajigIRDeviceDriver getDeviceIdForDevice:device];
+    if(!deviceIDString)
+        return nil;
+    NSString *query = [NSString stringWithFormat:@"select setofcodesid from m_setofcodes where brandid=\"%@\" and typeID=\"%@\" and controltype=\"IR\"", brandIDString, deviceIDString];
+    FMResultSet *deviceListing = [irDatabase executeQuery:query];
+    if(![deviceListing next])
+        return nil;
+    NSString *codeSetIDString = [deviceListing stringForColumn:@"setofcodesid"];
+    if(!codeSetIDString) {
+        NSLog(@"codeSetIDString: Failed to get ID for type %@.", codeSet);
+        return nil;
+    }
+    return codeSetIDString;
+}
 
 + (NSArray *) getIRDatabaseBrands {
     if(!irDatabase)
@@ -215,7 +233,8 @@ static FMDatabase *irDatabase;
     }
     return devices;
 }
-+ (NSArray *) getIRDatabaseFunctionsOnDevice:(NSString *)device forBrand:(NSString *)brand {
+
++ (NSArray *) getIRDatabaseCodeSetsOnDevice:(NSString *)device forBrand:(NSString *)brand {
     if(!irDatabase)
         return nil;
     NSString *brandIDString = [SwitchamajigIRDeviceDriver getBrandIdForBrand:brand];
@@ -224,8 +243,24 @@ static FMDatabase *irDatabase;
     NSString *deviceIDString = [SwitchamajigIRDeviceDriver getDeviceIdForDevice:device];
     if(!deviceIDString)
         return nil;
+    NSMutableArray *codeSets = [[NSMutableArray alloc] initWithCapacity:10];
+    NSString *query = [NSString stringWithFormat:@"select modelname from m_setofcodes where typeid=\"%@\" and brandid=\"%@\" and controltype=\"IR\"", deviceIDString, brandIDString];
+    FMResultSet *queryResults = [irDatabase executeQuery:query];
+    while([queryResults next]) {
+        NSString *codeSet = [queryResults stringForColumn:@"modelname"];
+        [codeSets addObject:codeSet];
+    }
+    return codeSets;
+}
+
++ (NSArray *) getIRDatabaseFunctionsInCodeSet:(NSString *)codeSet onDevice:(NSString *)device forBrand:(NSString *)brand {
+    if(!irDatabase)
+        return nil;
+    NSString *codeSetString = [SwitchamajigIRDeviceDriver getCodeSetIdForCodeSet:codeSet onDevice:device forBrand:brand];
+    if(!codeSetString)
+        return nil;
     NSMutableArray *functions = [[NSMutableArray alloc] initWithCapacity:10];
-    NSString *query = [NSString stringWithFormat:@"select distinct upper(functionname) from m_setofcodes,m_codelink where typeid=\"%@\" and brandid=\"%@\" and controltype=\"IR\" and m_codelink.setofcodesid=m_setofcodes.setofcodesid order by upper(functionname)", deviceIDString, brandIDString];
+    NSString *query = [NSString stringWithFormat:@"select distinct upper(functionname) from m_codelink where setofcodesid=\"%@\"", codeSetString];
     FMResultSet *queryResults = [irDatabase executeQuery:query];
     while([queryResults next]) {
         NSString *functionName = [queryResults stringForColumn:@"upper(functionname)"];
@@ -234,7 +269,7 @@ static FMDatabase *irDatabase;
     return functions;
 }
 
-+ (NSArray *) irCodesForFunction:(NSString *)function onDevice:(NSString *)device forBrand:(NSString *)brand {
++ (NSString *) irCodeForFunction:(NSString *)function inCodeSet:(NSString*) codeSet onDevice:(NSString *)device forBrand:(NSString *)brand {
     if(!irDatabase)
         return nil;
     NSString *brandIDString = [SwitchamajigIRDeviceDriver getBrandIdForBrand:brand];
@@ -243,27 +278,27 @@ static FMDatabase *irDatabase;
     NSString *deviceIDString = [SwitchamajigIRDeviceDriver getDeviceIdForDevice:device];
     if(!deviceIDString)
         return nil;
+    NSString *codeSetString = [SwitchamajigIRDeviceDriver getCodeSetIdForCodeSet:codeSet onDevice:device forBrand:brand];
+    if(!codeSetString)
+        return nil;
     // First query: look for UEI codes
-    NSString *query = [NSString stringWithFormat:@"select distinct ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"U\"", brandIDString, deviceIDString, function];
+    NSString *query = [NSString stringWithFormat:@"select ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and m_setofcodes.modelname=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"U\"", brandIDString, deviceIDString, codeSet, function];
     FMResultSet *queryResults = [irDatabase executeQuery:query];
-    NSMutableArray *irCodes = [[NSMutableArray alloc] initWithCapacity:10];
     while([queryResults next]) {
         NSString *ueiSetupCode = [queryResults stringForColumn:@"ueisetupcode"];
         NSString *ueiFunctionNumber = [queryResults stringForColumn:@"ircode"];
         NSString *irCode = [NSString stringWithFormat:@"UT%@%@", ueiSetupCode, ueiFunctionNumber];
         if(ueiSetupCode && ueiFunctionNumber)
-            [irCodes addObject:irCode];
+            return irCode;
     }
     // If we didn't return, look for hex codes
-    query = [NSString stringWithFormat:@"select distinct ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"O\"", brandIDString, deviceIDString, function];
+    query = [NSString stringWithFormat:@"select m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and m_setofcodes.modelname=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"O\"", brandIDString, deviceIDString, codeSet, function];
     queryResults = [irDatabase executeQuery:query];
     while([queryResults next]) {
         NSString *irCode = [queryResults stringForColumn:@"ircode"];
         if(irCode)
-            [irCodes addObject:irCode];
+            return irCode;
     }
-    if([irCodes count])
-        return irCodes;
     return nil;
 }
 
