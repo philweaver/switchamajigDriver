@@ -195,7 +195,7 @@ static FMDatabase *irDatabase;
     NSString *deviceIDString = [SwitchamajigIRDeviceDriver getDeviceIdForDevice:device];
     if(!deviceIDString)
         return nil;
-    NSString *query = [NSString stringWithFormat:@"select setofcodesid from m_setofcodes where brandid=\"%@\" and typeID=\"%@\" and controltype=\"IR\"", brandIDString, deviceIDString];
+    NSString *query = [NSString stringWithFormat:@"select setofcodesid from m_setofcodes where brandid=\"%@\" and typeID=\"%@\" and controltype=\"IR\" and modelname=\"%@\"", brandIDString, deviceIDString, codeSet];
     FMResultSet *deviceListing = [irDatabase executeQuery:query];
     if(![deviceListing next])
         return nil;
