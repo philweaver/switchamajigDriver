@@ -12,7 +12,6 @@
 @interface SwitchamajigIRDeviceDriver () {
 }
 @property (nonatomic, strong) NSString *hostName;
-- (void) startIRLearning;
 @end
 
 @interface SwitchamajigIRDeviceListener () <NSNetServiceBrowserDelegate, NSNetServiceDelegate> {
