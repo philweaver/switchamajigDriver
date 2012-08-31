@@ -85,7 +85,7 @@ static FMDatabase *irDatabase;
     NSLog(@"SwitchamajigIRDeviceDriver: connection didFailWithError - %@ %@",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
-    [[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
+    //[[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)conn
@@ -281,7 +281,7 @@ static FMDatabase *irDatabase;
     NSString *codeSetString = [SwitchamajigIRDeviceDriver getCodeSetIdForCodeSet:codeSet onDevice:device forBrand:brand];
     if(!codeSetString)
         return nil;
-    // First query: look for UEI codes
+    // First query: look for a UEI code
     NSString *query = [NSString stringWithFormat:@"select ueisetupcode,m_codes.ircode from m_codes,m_codelink,m_setofcodes where m_setofcodes.brandid=\"%@\" and m_setofcodes.typeid=\"%@\" and m_setofcodes.modelname=\"%@\" and upper(m_codelink.functionname)=\"%@\" and m_codes.codeid=m_codelink.codeid and m_codelink.setofcodesid=m_setofcodes.setofcodesid and m_setofcodes.controltype=\"IR\" and m_codes.sqsource=\"U\"", brandIDString, deviceIDString, codeSet, function];
     FMResultSet *queryResults = [irDatabase executeQuery:query];
     while([queryResults next]) {
