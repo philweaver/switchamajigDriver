@@ -232,7 +232,7 @@ bool listenerErrorReceieved;
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     int numPuckRequests = [irDevice getPuckRequestCount];
     STAssertTrue((numPuckRequests == 1), @"Device should have received one puck status request, but count is %d.", numPuckRequests);
-    [irDevice returnPuckStatus];
+    [irDevice returnValidPuckStatus];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Roger the shrubber"), @"Did not get Roger the shrubber. Instead got %s", lastFriendlyName);
     
@@ -257,11 +257,11 @@ bool listenerErrorReceieved;
     numPuckRequests = [irDevice3 getPuckRequestCount];
     STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
     // Complete the first puck status request
-    [irDevice2 returnPuckStatus];
+    [irDevice2 returnValidPuckStatus];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Unit2"), @"Did not get Unit2. Instead got %s", lastFriendlyName);
     // Complete the second puck status request
-    [irDevice3 returnPuckStatus];
+    [irDevice3 returnValidPuckStatus];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Unit3"), @"Did not get Unit3. Instead got %s", lastFriendlyName);
     
@@ -286,11 +286,11 @@ bool listenerErrorReceieved;
     numPuckRequests = [irDevice5 getPuckRequestCount];
     STAssertTrue((numPuckRequests == 1), @"Device2 should have received one puck status request, but count is %d.", numPuckRequests);
     // Complete the second puck status request
-    [irDevice5 returnPuckStatus];
+    [irDevice5 returnValidPuckStatus];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Unit5"), @"Did not get Unit5. Instead got %s", lastFriendlyName);
     // Complete the first puck status request
-    [irDevice4 returnPuckStatus];
+    [irDevice4 returnValidPuckStatus];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(!strcmp(lastFriendlyName, "Unit4"), @"Did not get Unit4. Instead got %s", lastFriendlyName);
     
@@ -387,7 +387,35 @@ bool listenerErrorReceieved;
     //STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error on learn IR after ir device shut down.");
 }
 #endif
-
+- (void)test009IRListenerErrors {
+    // Basic test with a single unit
+    listenerErrorReceieved = false;
+    SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25013];
+    [irDevice setDeviceName:@"FunkyAT"];
+    [irDevice resetPuckRequestCount];
+    SwitchamajigIRDeviceListener *listener = [[SwitchamajigIRDeviceListener alloc] initWithDelegate:self];
+    [irDevice startListening];
+    [irDevice announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    int numPuckRequests = [irDevice getPuckRequestCount];
+    STAssertTrue((numPuckRequests == 1), @"Device should have received one puck status request, but count is %d.", numPuckRequests);
+    [irDevice returnPuckStatusWithNoOEMKey];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(strcmp(lastFriendlyName, "FunkyAT"), @"Registered an IR with no oem key");
+    [irDevice announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    [irDevice returnPuckStatusWithInvalidOEMKey];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(strcmp(lastFriendlyName, "FunkyAT"), @"Registered an IR with an invalid oem key");
+    [irDevice announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    [irDevice returnValidPuckStatus];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(!strcmp(lastFriendlyName, "FunkyAT"), @"Did not get FunkyAT. Instead got %s. May not have properly checked listener errors", lastFriendlyName);
+    
+}
+#if RUN_ALL_TESTS
 - (void)test100IRDatabase {
     NSError *error;
     NSArray *brandsWithDatabaseUninitialized = [SwitchamajigIRDeviceDriver getIRDatabaseBrands];
@@ -419,7 +447,7 @@ bool listenerErrorReceieved;
     [expectedString getCString:expectedBytes maxLength:sizeof(expectedBytes) encoding:NSUTF8StringEncoding];
     STAssertTrue([irCommand isEqualToString:expectedString], @"Command wrong. Expected %@ Got %@", expectedString, irCommand);
 }
-
+#endif
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the

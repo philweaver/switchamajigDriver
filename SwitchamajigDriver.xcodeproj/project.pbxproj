@@ -44,6 +44,8 @@
 		AD921AFF157C992100940981 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921AFE157C992100940981 /* UIKit.framework */; };
 		ADB7515D15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */; };
 		ADB7516115D37AB900BA2809 /* socket_switchamajig1_cfg.hpp in Headers */ = {isa = PBXBuildFile; fileRef = ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */; };
+		ADF7AB0C15FEAF650052F96C /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = ADF7AB0A15FEAF650052F96C /* sha1.c */; };
+		ADF7AB0D15FEAF650052F96C /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = ADF7AB0B15FEAF650052F96C /* sha1.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,8 @@
 		AD921AFE157C992100940981 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		ADB7515C15D37AA700BA2809 /* socket_switchamajig1_cfg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = socket_switchamajig1_cfg.cpp; sourceTree = "<group>"; };
 		ADB7516015D37AB900BA2809 /* socket_switchamajig1_cfg.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = socket_switchamajig1_cfg.hpp; sourceTree = "<group>"; };
+		ADF7AB0A15FEAF650052F96C /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sha1.c; sourceTree = "<group>"; };
+		ADF7AB0B15FEAF650052F96C /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +171,8 @@
 		AD8CF03D1573055500D0BC98 /* SwitchamajigDriver */ = {
 			isa = PBXGroup;
 			children = (
+				ADF7AB0A15FEAF650052F96C /* sha1.c */,
+				ADF7AB0B15FEAF650052F96C /* sha1.h */,
 				AD59BDB915E54EBC001D5BFF /* FMDatabase.h */,
 				AD59BDBA15E54EBC001D5BFF /* FMDatabase.m */,
 				AD59BDBB15E54EBC001D5BFF /* FMDatabaseAdditions.h */,
@@ -240,6 +246,7 @@
 				AD59BDC815E54EBD001D5BFF /* FMDatabasePool.h in Headers */,
 				AD59BDCA15E54EBD001D5BFF /* FMDatabaseQueue.h in Headers */,
 				AD59BDCD15E54EBD001D5BFF /* FMResultSet.h in Headers */,
+				ADF7AB0D15FEAF650052F96C /* sha1.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +361,7 @@
 				AD59BDCB15E54EBD001D5BFF /* FMDatabaseQueue.m in Sources */,
 				AD59BDCC15E54EBD001D5BFF /* fmdb.m in Sources */,
 				AD59BDCE15E54EBD001D5BFF /* FMResultSet.m in Sources */,
+				ADF7AB0C15FEAF650052F96C /* sha1.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

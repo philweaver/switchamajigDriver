@@ -10,7 +10,7 @@
 #import "arpa/inet.h"
 #import "FMDatabase.h"
 #import "FMResultSet.h"
-
+#import "sha1.h"
 #define SQ_PORTNUM 80
 #define SWITCHAMAJIG_TIMEOUT 5
 
@@ -427,8 +427,65 @@ static FMDatabase *irDatabase;
         return;
     }
     NSArray *nameNodes = [puckResponse nodesForXPath:@".//puckdata/name" error:&error];
-    if(error) {
+    if(error || ![nameNodes count]) {
         NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting name: %@", error);
+        return;
+    }
+    // Check the oem key
+    NSArray *keyNodes = [puckResponse nodesForXPath:@".//puckdata/oem_key" error:&error];
+    if(error || ![keyNodes count]) {
+        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting oemkey: %@", error);
+        return;
+    }
+    NSString *oemKeyString = [[keyNodes objectAtIndex:0] stringValue];
+    NSArray *macNodes = [puckResponse nodesForXPath:@".//puckdata/mac_address" error:&error];
+    if(error || ![macNodes count]) {
+        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting mac address: %@", error);
+        return;
+    }
+    NSString *macAddrString = [[macNodes objectAtIndex:0] stringValue];
+    NSScanner *macAddrScan = [[NSScanner alloc] initWithString:macAddrString];
+    [macAddrScan setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@": "]];
+    unsigned char macAddress[6];
+    for(int i=0; i < sizeof(macAddress); ++i) {
+        unsigned macAddrPartInt;
+        if(![macAddrScan scanHexInt:&macAddrPartInt]) {
+            NSLog(@"Failing to scan mac address. String is %@, i=%d", macAddrString, i);
+            return;
+        }
+        macAddress[i] = (unsigned char) macAddrPartInt;
+    }
+    unsigned char signature[32] = {0x03, 0x14, 0x15, 0x92, 0x65, 0x35, 0x89, 0x79, 0x32, 0x38, 0x46, 0x26, 0x43, 0x38, 0x32, 0x79, 0x64, 0x6f, 0x6e, 0x74, 0x63, 0x6c, 0x6f, 0x6e, 0x65, 0x73, 0x27, 0x6d, 0x61, 0x6a, 0x69, 0x67};
+    SHA1Context sha;
+    SHA1Reset(&sha);
+    SHA1Input(&sha, signature, sizeof(signature));
+    SHA1Input(&sha, macAddress, sizeof(macAddress));
+    if(!SHA1Result(&sha)) {
+        NSLog(@"Failed to compute hash\n");
+        return;
+    }
+    // Encode the digest with base64 encoding to store it in the oemKey
+    unsigned char messageDigest[21];
+    memset(messageDigest, 0, sizeof(messageDigest));
+    NSLog(@"digest[0] = %u", sha.Message_Digest[0]);
+    for(int i=0,j=0; i < 5; ++i) {
+        messageDigest[j++] = sha.Message_Digest[i] & 0xff;
+        messageDigest[j++] = (sha.Message_Digest[i] >> 8) & 0xff;
+        messageDigest[j++] = (sha.Message_Digest[i] >> 16) & 0xff;
+        messageDigest[j++] = (sha.Message_Digest[i] >> 24) & 0xff;
+    }
+    unsigned char messageDigestBase64[32];
+    memset(messageDigestBase64, 0, sizeof(messageDigestBase64));
+    const char *base64Lookup = "abcdefGhijklmABCDEFgHIJKLMNOPQRSTUVWXYZnopqrstuvwxyz1234567890+-"; // A little different just to annoy people
+    for(unsigned i=0,j=0; i < sizeof(messageDigest); i=i+3){
+        messageDigestBase64[j++] = base64Lookup[messageDigest[i]&0x3f];
+        messageDigestBase64[j++] = base64Lookup[((messageDigest[i]&0xc0) >> 6) | ((messageDigest[i+1]&0x0f) << 2)];
+        messageDigestBase64[j++] = base64Lookup[((messageDigest[i+1]&0xf0) >> 4) | ((messageDigest[i+1]&0x03) << 4)];
+        messageDigestBase64[j++] = base64Lookup[(messageDigest[i]&0xfc) >> 2];
+    }
+    NSString *computedOemKeyString = [NSString stringWithCString:(const char *)messageDigestBase64 encoding:NSASCIIStringEncoding];
+    if(![computedOemKeyString isEqualToString:oemKeyString]) {
+        NSLog(@"OEM Key verification failed. Computed = %@, Read = %@", computedOemKeyString, oemKeyString);
         return;
     }
     if([nameNodes count]) {
@@ -517,14 +574,33 @@ static FMDatabase *irDatabase;
     [sock readDataWithTimeout:-1 tag:0];
 }
 
-- (void) returnPuckStatus {
-    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> </puckdata>", [self deviceName]];
+- (void) returnValidPuckStatus {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> <mac_address>00:06:66:72:16:dd</mac_address> <oem_key>S4I4eA8EOA1JS6qKk5ucYWd6OFiZ</oem_key> </puckdata>", [self deviceName]];
     NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
     //NSLog(@"header = %@", header);
     //NSLog(@"response = %@", response);
     [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
-    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];    
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
 }
+
+- (void) returnPuckStatusWithNoOEMKey {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> <mac_address>00:06:66:72:16:dd</mac_address> </puckdata>", [self deviceName]];
+    NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+    //NSLog(@"header = %@", header);
+    //NSLog(@"response = %@", response);
+    [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+}
+
+- (void) returnPuckStatusWithInvalidOEMKey {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <puckdata> <name>%@</name> <mac_address>00:06:66:72:16:dd</mac_address> <oem_key>junkeA8EOA1JS6qKk5ucYWd6OFiZ</oem_key> </puckdata>", [self deviceName]];
+    NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
+    //NSLog(@"header = %@", header);
+    //NSLog(@"response = %@", response);
+    [connectedSocket writeData:[header dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+    [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
+}
+
 - (void) returnIRLearningCommand:(NSString*)command {
     NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"77\" reasonCode=\"0\" /> <learnedData data=\"%@\"/> </learnIRResponse>", command];
     NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];

@@ -31,7 +31,9 @@
 - (void) announcePresenceToListener:(SwitchamajigIRDeviceListener*)listener withHostName:(NSString *)hostname;
 - (void) startListening;
 - (void) stopListening;
-- (void) returnPuckStatus;
+- (void) returnValidPuckStatus;
+- (void) returnPuckStatusWithNoOEMKey;
+- (void) returnPuckStatusWithInvalidOEMKey;
 - (void) resetPuckRequestCount;
 - (int) getPuckRequestCount;
 - (void) resetIRLearnRequestCount;
