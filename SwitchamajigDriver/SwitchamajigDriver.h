@@ -62,6 +62,8 @@ const NSString *SwitchamajigDriverErrorDomain;
 + (NSArray *) getIRDatabaseDevicesForBrand:(NSString *)brand;
 + (NSArray *) getIRDatabaseCodeSetsOnDevice:(NSString *)device forBrand:(NSString *)brand;
 + (NSArray *) getIRDatabaseFunctionsInCodeSet:(NSString *)codeSet onDevice:(NSString *)device forBrand:(NSString *)brand;
++ (NSArray *) getIRDatabaseDevices;
++ (NSArray *) getIRDatabaseBrandsForDevice:(NSString *)device;
 @end
 
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {

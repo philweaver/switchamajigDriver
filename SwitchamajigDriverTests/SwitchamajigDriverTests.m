@@ -386,7 +386,6 @@ bool listenerErrorReceieved;
     STAssertFalse(connectedCallbackCalled, @"Received connect callback after ir device shut down.");
     //STAssertTrue(disconnectedCallbackCalled, @"No disconnect with error on learn IR after ir device shut down.");
 }
-#endif
 - (void)test009IRListenerErrors {
     // Basic test with a single unit
     listenerErrorReceieved = false;
@@ -415,7 +414,7 @@ bool listenerErrorReceieved;
     STAssertTrue(!strcmp(lastFriendlyName, "FunkyAT"), @"Did not get FunkyAT. Instead got %s. May not have properly checked listener errors", lastFriendlyName);
     
 }
-#if RUN_ALL_TESTS
+#endif
 - (void)test100IRDatabase {
     NSError *error;
     NSArray *brandsWithDatabaseUninitialized = [SwitchamajigIRDeviceDriver getIRDatabaseBrands];
@@ -446,8 +445,13 @@ bool listenerErrorReceieved;
     NSString *expectedString = @"P7b64 79c4 fdf5 7f78 c44c ae1c f80d be9a 1b8a 7f35 1f7f e938 c9f8 d9c2 7dc6 c15a ea40 2b72 7e29 2850 eda3 49a7 74c3 0311 9045 0825 f4bb 54ac a2f1 718b 5008 bc94  ";
     [expectedString getCString:expectedBytes maxLength:sizeof(expectedBytes) encoding:NSUTF8StringEncoding];
     STAssertTrue([irCommand isEqualToString:expectedString], @"Command wrong. Expected %@ Got %@", expectedString, irCommand);
+    NSArray *devices = [SwitchamajigIRDeviceDriver getIRDatabaseDevices];
+    STAssertTrue([devices count] == 43, @"Expected 43 devices in database. Got %d", [devices count]);
+    STAssertTrue([devices containsObject:@"TV"], @"TV not in devices");
+    NSArray *tvBrands = [SwitchamajigIRDeviceDriver getIRDatabaseBrandsForDevice:@"TV"];
+    STAssertTrue([tvBrands count] == 176, @"Expected 176 tv brands in database. Got %d", [tvBrands count]);
+    STAssertTrue([tvBrands containsObject:@"Panasonic"], @"Panasonic not listed as TV brand");
 }
-#endif
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the
