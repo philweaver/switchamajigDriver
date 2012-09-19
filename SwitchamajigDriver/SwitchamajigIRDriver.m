@@ -181,6 +181,7 @@ void endIRDatabaseThreadsafe() {
     NSString *query = [NSString stringWithFormat:@"select brandid from m_brands where brandname=\"%@\"", brand];
     FMResultSet *brandListing = [irDatabase executeQuery:query];
     if(![brandListing next]) {
+        NSLog(@"getIRDatabaseDevicesForBrand: Failed to get brandid for brand %@.", brand);
         return nil;
     }
     NSString *brandIDString = [brandListing stringForColumn:@"brandid"];
@@ -195,7 +196,8 @@ void endIRDatabaseThreadsafe() {
     NSString *query = [NSString stringWithFormat:@"select typeID from m_deviceTypes where typename=\"%@\"", device];
     FMResultSet *deviceListing = [irDatabase executeQuery:query];
     if(![deviceListing next]) {
-        return nil;
+       NSLog(@"getDeviceIdForDevice: Failed to get typeID for type %@.", device);
+       return nil;
     }
     NSString *deviceIDString = [deviceListing stringForColumn:@"typeID"];
     if(!deviceIDString) {
@@ -217,6 +219,7 @@ void endIRDatabaseThreadsafe() {
     NSString *query = [NSString stringWithFormat:@"select setofcodesid from m_setofcodes where brandid=\"%@\" and typeID=\"%@\" and controltype=\"IR\" and modelname=\"%@\"", brandIDString, deviceIDString, codeSet];
     FMResultSet *deviceListing = [irDatabase executeQuery:query];
     if(![deviceListing next]) {
+        NSLog(@"codeSetIDString: Failed to get ID for type %@.", codeSet);
         return nil;
     }
     NSString *codeSetIDString = [deviceListing stringForColumn:@"setofcodesid"];
