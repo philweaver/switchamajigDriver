@@ -96,12 +96,12 @@ static FMDatabase *irDatabase;
     DDXMLDocument *deviceResponse = [[DDXMLDocument alloc] initWithData:[connection SJData] options:0 error:&error];
     
     if(error) {
-        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: xml document error %@", error);
+        NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: xml document error %@", error);
         return;
     }
     NSArray *learnIRNodes = [deviceResponse nodesForXPath:@".//learnIRResponse" error:&error];
     if(error) {
-        NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error getting name: %@", error);
+        NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: error getting name: %@", error);
         return;
     }
     DDXMLNode *irNode;
@@ -110,7 +110,7 @@ static FMDatabase *irDatabase;
         NSArray *statusNodes = [irNode nodesForXPath:@".//status" error:&statusError];
         NSArray *learnedDataNodes = [irNode nodesForXPath:@".//learnedData" error:&learnDataError];
         if(statusError || learnDataError || ([statusNodes count] != 1) || ([learnedDataNodes count] != 1)) {
-            NSLog(@"SwitchamajigIRDeviceListener: connectionDidFinishLoading: error parsing ir status %@ %@ %d %d", statusError, learnDataError, [statusNodes count], [learnedDataNodes count]);
+            NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: error parsing ir status %@ %@ %d %d", statusError, learnDataError, [statusNodes count], [learnedDataNodes count]);
             return;
         }
         DDXMLElement *statusElement = (DDXMLElement *)[statusNodes objectAtIndex:0];
