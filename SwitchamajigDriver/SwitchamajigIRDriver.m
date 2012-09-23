@@ -306,7 +306,7 @@ void endIRDatabaseThreadsafe() {
         return nil;
     }
     NSMutableArray *functions = [[NSMutableArray alloc] initWithCapacity:10];
-    NSString *query = [NSString stringWithFormat:@"select distinct upper(functionname) from m_codelink where setofcodesid=\"%@\"", codeSetString];
+    NSString *query = [NSString stringWithFormat:@"select distinct upper(functionname) from m_codelink where setofcodesid=\"%@\" order by upper(functionname)", codeSetString];
     FMResultSet *queryResults = [irDatabase executeQuery:query];
     while([queryResults next]) {
         NSString *functionName = [queryResults stringForColumn:@"upper(functionname)"];
@@ -370,7 +370,7 @@ void endIRDatabaseThreadsafe() {
         return nil;
     }
     NSMutableArray *devices = [[NSMutableArray alloc] initWithCapacity:100];
-    FMResultSet *queryResults = [irDatabase executeQuery:@"select distinct m_devicetypes.typename,m_setofcodes.typeid from m_devicetypes,m_setofcodes where m_devicetypes.typeid==m_setofcodes.typeid and m_setofcodes.controltype=\"IR\""];
+    FMResultSet *queryResults = [irDatabase executeQuery:@"select distinct m_devicetypes.typename,m_setofcodes.typeid from m_devicetypes,m_setofcodes where m_devicetypes.typeid==m_setofcodes.typeid and m_setofcodes.controltype=\"IR\" order by m_devicetypes.typename"];
     while([queryResults next]) {
         NSString *deviceName = [queryResults stringForColumn:@"typename"];
         [devices addObject:deviceName];
