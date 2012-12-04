@@ -9,7 +9,9 @@
 #import "SwitchamajigDriver.h"
 #import "GCDAsyncSocket.h"
 
-@interface SwitchamajigIRDeviceDriver () {
+@interface SwitchamajigIRDeviceDriver () <NSURLConnectionDelegate> {
+    BOOL irLearningInProgress;
+    int numTimeouts;
 }
 @property (nonatomic, strong) NSString *hostName;
 @end
@@ -40,7 +42,7 @@
 - (int) getIRLearnRequestCount;
 - (NSString *) lastCommand;
 - (void) returnIRLearningCommand:(NSString*)command;
-- (void) returnIRLearningError;
+- (void) returnIRLearningErrorWithReasonCode:(int)reasonCode;
 @property int port;
 @property NSString *deviceName;
 @end

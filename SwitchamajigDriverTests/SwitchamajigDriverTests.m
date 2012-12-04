@@ -341,9 +341,35 @@ bool listenerErrorReceieved;
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     numIRLearningRequests = [irDevice getIRLearnRequestCount];
     STAssertTrue((numIRLearningRequests == 2), @"IR count request wrong (is %d).", numIRLearningRequests);
-    [irDevice returnIRLearningError];
+    [irDevice returnIRLearningErrorWithReasonCode:5];
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
     STAssertTrue(learningIRError, @"Failed to get IR error.");
+    // Verify that we retry if we get a quick timeout
+    learningIRError = false;
+    [driver startIRLearning];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 3), @"IR count request wrong (is %d).", numIRLearningRequests);
+    [irDevice returnIRLearningErrorWithReasonCode:6];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertFalse(learningIRError, @"Got error on quick timeout.");
+    numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 4), @"IR count request wrong - should have retried on timeout (is %d).", numIRLearningRequests);
+    // On the second timeout, we should report an error
+    [irDevice returnIRLearningErrorWithReasonCode:6];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(learningIRError, @"Failed to get IR error on second timeout.");
+    // Check for a real timeout as well
+    learningIRError = false;
+    [driver startIRLearning];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:4.0]];
+    numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 5), @"IR count request wrong (is %d).", numIRLearningRequests);
+    [irDevice returnIRLearningErrorWithReasonCode:6];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(learningIRError, @"Did not get error on real timeout.");
+    numIRLearningRequests = [irDevice getIRLearnRequestCount];
+    STAssertTrue((numIRLearningRequests == 5), @"IR count request wrong after real timeout (is %d).", numIRLearningRequests);
 }
 
 - (void)test008IRDriverErrors {

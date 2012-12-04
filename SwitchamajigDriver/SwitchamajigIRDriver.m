@@ -12,19 +12,21 @@
 #import "FMResultSet.h"
 #import "sha1.h"
 #define SQ_PORTNUM 80
-#define SWITCHAMAJIG_TIMEOUT 5
+#define SWITCHAMAJIG_TIMEOUT 15
+#define MIN_TIME_FOR_TIMEOUT 3
 
 @interface SJAugmentedNSURLConnection : NSURLConnection {
     
 }
 @property NSString *SJHostName;
 @property NSMutableData *SJData;
+@property NSDate *connectionStartTime;
 @end
 
 @implementation SJAugmentedNSURLConnection
 @synthesize SJHostName;
 @synthesize SJData;
-
+@synthesize connectionStartTime;
 @end
 
 
@@ -37,6 +39,8 @@ static FMDatabase *irDatabase;
 - (id) initWithHostname:(NSString *)newHostName {
     self = [super init];
     [self setHostName:newHostName];
+    irLearningInProgress = NO;
+    numTimeouts = 0;
     return self;
 }
 
@@ -61,10 +65,12 @@ static FMDatabase *irDatabase;
 }
 
 - (void) startIRLearning {
+    irLearningInProgress = YES;
     NSString *learnIRRequestString = [NSString stringWithFormat:@"http://%@/learnIR.xml", [self hostName]];
     NSURLRequest *learnIRRequest=[NSURLRequest requestWithURL:[NSURL URLWithString:learnIRRequestString] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:SWITCHAMAJIG_TIMEOUT];
     SJAugmentedNSURLConnection *connection = [[SJAugmentedNSURLConnection alloc] initWithRequest:learnIRRequest delegate:self];
     [connection setSJData:[NSMutableData data]];
+    [connection setConnectionStartTime:[NSDate date]];
 }
 
 // NSURLConnection Delegate
@@ -85,6 +91,11 @@ static FMDatabase *irDatabase;
     NSLog(@"SwitchamajigIRDeviceDriver: connection didFailWithError - %@ %@",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
+    if(irLearningInProgress) {
+        irLearningInProgress = NO;
+        id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
+        [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:error];
+    }
     //[[self delegate] SwitchamajigDeviceDriverDisconnected:self withError:error];
 }
 
@@ -97,20 +108,34 @@ static FMDatabase *irDatabase;
     
     if(error) {
         NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: xml document error %@", error);
+        if(irLearningInProgress) {
+            irLearningInProgress = NO;
+            id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
+            [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:error];
+        }
         return;
     }
     NSArray *learnIRNodes = [deviceResponse nodesForXPath:@".//learnIRResponse" error:&error];
     if(error) {
-        NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: error getting name: %@", error);
-        return;
+        NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: error getting learnIRResponse: %@", error);
+        if(irLearningInProgress) {
+            irLearningInProgress = NO;
+            id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
+            [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:error];
+        }
     }
     DDXMLNode *irNode;
+    if(irLearningInProgress)
+        irLearningInProgress = NO;
+
     for (irNode in learnIRNodes){
+        id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
         NSError *statusError, *learnDataError;
         NSArray *statusNodes = [irNode nodesForXPath:@".//status" error:&statusError];
         NSArray *learnedDataNodes = [irNode nodesForXPath:@".//learnedData" error:&learnDataError];
         if(statusError || learnDataError || ([statusNodes count] != 1) || ([learnedDataNodes count] != 1)) {
             NSLog(@"SwitchamajigIRDeviceDriver: connectionDidFinishLoading: error parsing ir status %@ %@ %d %d", statusError, learnDataError, [statusNodes count], [learnedDataNodes count]);
+            [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:nil];
             return;
         }
         DDXMLElement *statusElement = (DDXMLElement *)[statusNodes objectAtIndex:0];
@@ -120,6 +145,7 @@ static FMDatabase *irDatabase;
         DDXMLNode *learnedDataAttribute = [learnedDataElement attributeForName:@"data"];
         if(!messageNumAttribute || !reasonCodeAttribute || !learnedDataAttribute) {
             NSLog(@"Unable to parse ir status elements. Response = %@ and %@", [statusElement XMLString], [learnedDataElement XMLString]);
+            [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:nil];
             return;
         }
         //NSString *messageNumString = [messageNumAttribute stringValue];
@@ -130,22 +156,36 @@ static FMDatabase *irDatabase;
         bool reasonCodeOK = [reasonCodeScan scanInt:&reasonCode];
         if(!reasonCodeOK) {
             NSLog(@"Unable to extract integer reason code from %@", reasonCodeString);
+            [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:nil];
             return;
         }
         if(reasonCode) {
+            // If we have reason code 6 (timeout), make sure the request has been alive for a reasonable
+            // length of time. On at least some units, the request after a timeout always times out immediately,
+            // as if the response was cached somewhere or the unit wanted to emphasize the timeout.
+            if(reasonCode == 6) {
+                numTimeouts++;
+                if((numTimeouts < 2) && [[connection connectionStartTime] timeIntervalSinceNow] > -MIN_TIME_FOR_TIMEOUT) {
+                    NSLog(@"Received timeout too quickly. Retrying.");
+                    [self startIRLearning];
+                    return;
+                }
+            }
             // This is an actual error from the device. Report it.
             if([[self delegate] respondsToSelector:@selector(SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:error:)]) {
                 NSError *irError = [NSError errorWithDomain:(NSString*)SwitchamajigDriverErrorDomain code:SJDriverErrorIR userInfo:nil];
-                id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
                 [theDelegate SwitchamajigIRDeviceDriverDelegateErrorOnLearnIR:self error:irError];
+                numTimeouts = 0;
+            }
+        } else {
+            // Reason code is OK. Return the IR command
+            if([[self delegate] respondsToSelector:@selector(SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:irCommand:)]) {
+                [theDelegate SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:self irCommand:learnedDataString];
+                numTimeouts = 0;
             }
         }
-        // Reason code is OK. Return the IR command
-        if([[self delegate] respondsToSelector:@selector(SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:irCommand:)]) {
-            id<SwitchamajigIRDeviceDriverDelegate> theDelegate = (id<SwitchamajigIRDeviceDriverDelegate>)[self delegate];
-            [theDelegate SwitchamajigIRDeviceDriverDelegateDidReceiveLearnedIRCommand:self irCommand:learnedDataString];
-        }
     }
+    [connection cancel];
     [[self delegate] SwitchamajigDeviceDriverConnected:self];
 }
 
@@ -710,8 +750,8 @@ void endIRDatabaseThreadsafe() {
     [connectedSocket writeData:[response dataUsingEncoding:NSUTF8StringEncoding] withTimeout:-1 tag:0];
 }
 
-- (void) returnIRLearningError {
-    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"70\" reasonCode=\"6\" /> <learnedData data=\"\"/> </learnIRResponse>"];
+- (void) returnIRLearningErrorWithReasonCode:(int)reasonCode {
+    NSString *response = [NSString stringWithFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?> <learnIRResponse> <status messageNum=\"70\" reasonCode=\"%d\" /> <learnedData data=\"\"/> </learnIRResponse>", reasonCode];
     NSString *header = [NSString stringWithFormat:@"HTTP/1.1 200 OK\r\nCache-Control: no-cache\r\nContent-Type: text/xml\r\nContent-Length: %d\r\n\r\n", [response length]];
     //NSLog(@"header = %@", header);
     //NSLog(@"response = %@", response);
