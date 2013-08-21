@@ -9,6 +9,8 @@
 #import "SwitchamajigDriverTests.h"
 #import "SwitchamajigControllerDeviceDriver.h"
 #import "SwitchamajigIRDriver.h"
+#import "SwitchamajigInsteonDriver.h"
+
 @implementation SwitchamajigDriverTests
 
 #define RUN_ALL_TESTS 1
@@ -440,7 +442,6 @@ bool listenerErrorReceieved;
     STAssertTrue(!strcmp(lastFriendlyName, "FunkyAT"), @"Did not get FunkyAT. Instead got %s. May not have properly checked listener errors", lastFriendlyName);
     
 }
-#endif
 - (void)test100IRDatabase {
     NSError *error;
     NSArray *brandsWithDatabaseUninitialized = [SwitchamajigIRDeviceDriver getIRDatabaseBrands];
@@ -478,6 +479,56 @@ bool listenerErrorReceieved;
     STAssertTrue([tvBrands count] == 176, @"Expected 176 tv brands in database. Got %d", [tvBrands count]);
     STAssertTrue([tvBrands containsObject:@"Panasonic"], @"Panasonic not listed as TV brand");
 }
+#endif
+
+- (void)test050InsteonListener {
+    // Basic test with a single unit
+    listenerErrorReceieved = false;
+    /*SimulatedSwitchamajigIR *irDevice = [[SimulatedSwitchamajigIR alloc] init];
+    [irDevice setPort:25000];
+    [irDevice setDeviceName:@"Roger the shrubber"];
+    [irDevice resetPuckRequestCount];*/
+    lastFriendlyName[0] = 0;
+    static SwitchamajigInsteonDeviceListener *listener;
+    listener = [[SwitchamajigInsteonDeviceListener alloc] initWithDelegate:self];
+    //[irDevice startListening];
+    //[irDevice announcePresenceToListener:listener withHostName:@"localhost"];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+    //int numPuckRequests = [irDevice getPuckRequestCount];
+    //STAssertTrue((numPuckRequests == 1), @"Device should have received one puck status request, but count is %d.", numPuckRequests);
+    //[irDevice returnValidPuckStatus];
+    //[[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+    STAssertTrue(strlen(lastFriendlyName), @"Did not get callback from Insteon Listener. Is a unit plugged in?");
+    
+}
+
+- (void)test051InsteonDriverBasicOperation {
+    // Basic test with a single unit
+    SimulatedInsteonDevice *insteon = [[SimulatedInsteonDevice alloc] init];
+    [insteon startListeningOnPort:25105];
+    SwitchamajigInsteonDeviceDriver *driver = [[SwitchamajigInsteonDeviceDriver alloc] initWithHostname:@"localhost:25105"];
+    NSError *err;
+    DDXMLDocument *xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <insteon_send><username>admin</username><password>shadow</password><dst_addr>20B300</dst_addr><command>OFF</command></insteon_send>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for send command: %@", err);
+    }
+    DDXMLNode *commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+
+    STAssertTrue([[NSPredicate predicateWithFormat:@"SELF contains \"GET /3?026220B3000F13ff=I=3\""] evaluateWithObject:insteon->lastIssuedCommand], @"Wrong received command. Got %@", insteon->lastIssuedCommand);
+    
+    xmlCommandDoc = [[DDXMLDocument alloc] initWithXMLString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r <insteon_send><username>admin</username><password>shadow</password><dst_addr>123456</dst_addr><level>128</level><command>ON</command></insteon_send>" options:0 error:&err];
+    if(!xmlCommandDoc) {
+        NSLog(@"Failed to create xml doc for send command: %@", err);
+    }
+    commandNode = [[xmlCommandDoc children] objectAtIndex:0];
+    [driver issueCommandFromXMLNode:commandNode error:&err];
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    
+    STAssertTrue([[NSPredicate predicateWithFormat:@"SELF contains \"GET /3?02621234560F1180=I=3\""] evaluateWithObject:insteon->lastIssuedCommand], @"Wrong received command. Got %@", insteon->lastIssuedCommand);
+}
+
 
 #if 0
 // This test doesn't pass because th driver is synchronous and the controller is asynchronous and the

@@ -112,13 +112,22 @@ const NSString *SwitchamajigDriverErrorDomain;
 + (NSArray *) getIRDatabaseBrandsForDevice:(NSString *)device;
 @end
 
+@interface SwitchamajigInsteonDeviceDriver : SwitchamajigDriver {
+}
+@end
+
 @interface SwitchamajigControllerDeviceListener : SwitchamajigListener {
 
 }
 @end
 
 @interface SwitchamajigIRDeviceListener : SwitchamajigListener {
+}
+@end
+
+@interface SwitchamajigInsteonDeviceListener : SwitchamajigListener {
     
 }
+- (id) initWithDelegate:(id)delegate_init andURL:(NSURL *)url;
 
 @end
