@@ -15,20 +15,7 @@
 #define SWITCHAMAJIG_TIMEOUT 15
 #define MIN_TIME_FOR_TIMEOUT 3
 
-@interface SJAugmentedNSURLConnection : NSURLConnection {
-    
-}
-@property NSString *SJHostName;
-@property NSMutableData *SJData;
-@property NSDate *connectionStartTime;
-@end
-
-@implementation SJAugmentedNSURLConnection
-@synthesize SJHostName;
-@synthesize SJData;
-@synthesize connectionStartTime;
-@end
-
+#import "SJAugmentedNSURLConnection.h"
 
 @implementation SwitchamajigIRDeviceDriver
 @synthesize hostName;

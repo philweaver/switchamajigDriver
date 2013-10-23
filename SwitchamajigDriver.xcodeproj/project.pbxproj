@@ -23,6 +23,10 @@
 		AD59BDD015E54F34001D5BFF /* IRDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = AD59BDCF15E54F34001D5BFF /* IRDB.sqlite */; };
 		AD59BDD215E56314001D5BFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD59BDD115E56314001D5BFF /* libsqlite3.dylib */; };
 		AD59BDD315E5636F001D5BFF /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AD59BDD115E56314001D5BFF /* libsqlite3.dylib */; };
+		AD7F79C117BB2F24008F28D5 /* SwitchamajigInsteonDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = AD7F79BF17BB2F24008F28D5 /* SwitchamajigInsteonDriver.h */; };
+		AD7F79C217BB2F24008F28D5 /* SwitchamajigInsteonDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7F79C017BB2F24008F28D5 /* SwitchamajigInsteonDriver.m */; };
+		AD7F79C517BB366E008F28D5 /* SJAugmentedNSURLConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = AD7F79C317BB366E008F28D5 /* SJAugmentedNSURLConnection.h */; };
+		AD7F79C617BB366E008F28D5 /* SJAugmentedNSURLConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = AD7F79C417BB366E008F28D5 /* SJAugmentedNSURLConnection.m */; };
 		AD8CF03C1573055500D0BC98 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF03B1573055500D0BC98 /* Foundation.framework */; };
 		AD8CF0421573055500D0BC98 /* SwitchamajigDriver.m in Sources */ = {isa = PBXBuildFile; fileRef = AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */; };
 		AD8CF04A1573055500D0BC98 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD8CF0491573055500D0BC98 /* SenTestingKit.framework */; };
@@ -74,6 +78,10 @@
 		AD59BDC315E54EBD001D5BFF /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FMResultSet.m; path = fmdb/src/FMResultSet.m; sourceTree = "<group>"; };
 		AD59BDCF15E54F34001D5BFF /* IRDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = IRDB.sqlite; sourceTree = "<group>"; };
 		AD59BDD115E56314001D5BFF /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		AD7F79BF17BB2F24008F28D5 /* SwitchamajigInsteonDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchamajigInsteonDriver.h; sourceTree = "<group>"; };
+		AD7F79C017BB2F24008F28D5 /* SwitchamajigInsteonDriver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchamajigInsteonDriver.m; sourceTree = "<group>"; };
+		AD7F79C317BB366E008F28D5 /* SJAugmentedNSURLConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJAugmentedNSURLConnection.h; sourceTree = "<group>"; };
+		AD7F79C417BB366E008F28D5 /* SJAugmentedNSURLConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJAugmentedNSURLConnection.m; sourceTree = "<group>"; };
 		AD8CF0381573055500D0BC98 /* libSwitchamajigDriver.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSwitchamajigDriver.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD8CF03B1573055500D0BC98 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AD8CF03F1573055500D0BC98 /* SwitchamajigDriver-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SwitchamajigDriver-Prefix.pch"; sourceTree = "<group>"; };
@@ -192,11 +200,15 @@
 				AD921AE8157899B800940981 /* GCDAsyncSocket.m */,
 				AD921ADE15773B3A00940981 /* SwitchamajigControllerDeviceDriver.m */,
 				AD921ADF15773B3A00940981 /* SwitchamajigControllerDeviceDriver.h */,
+				AD7F79C017BB2F24008F28D5 /* SwitchamajigInsteonDriver.m */,
+				AD7F79BF17BB2F24008F28D5 /* SwitchamajigInsteonDriver.h */,
 				AD8CF0401573055500D0BC98 /* SwitchamajigDriver.h */,
 				AD8CF0411573055500D0BC98 /* SwitchamajigDriver.m */,
 				AD59BD8015DEF673001D5BFF /* SwitchamajigIRDriver.m */,
 				AD59BD7F15DEF673001D5BFF /* SwitchamajigIRDriver.h */,
 				AD8CF03E1573055500D0BC98 /* Supporting Files */,
+				AD7F79C317BB366E008F28D5 /* SJAugmentedNSURLConnection.h */,
+				AD7F79C417BB366E008F28D5 /* SJAugmentedNSURLConnection.m */,
 			);
 			path = SwitchamajigDriver;
 			sourceTree = "<group>";
@@ -247,6 +259,8 @@
 				AD59BDCA15E54EBD001D5BFF /* FMDatabaseQueue.h in Headers */,
 				AD59BDCD15E54EBD001D5BFF /* FMResultSet.h in Headers */,
 				ADF7AB0D15FEAF650052F96C /* sha1.h in Headers */,
+				AD7F79C117BB2F24008F28D5 /* SwitchamajigInsteonDriver.h in Headers */,
+				AD7F79C517BB366E008F28D5 /* SJAugmentedNSURLConnection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +376,8 @@
 				AD59BDCC15E54EBD001D5BFF /* fmdb.m in Sources */,
 				AD59BDCE15E54EBD001D5BFF /* FMResultSet.m in Sources */,
 				ADF7AB0C15FEAF650052F96C /* sha1.c in Sources */,
+				AD7F79C217BB2F24008F28D5 /* SwitchamajigInsteonDriver.m in Sources */,
+				AD7F79C617BB366E008F28D5 /* SJAugmentedNSURLConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
