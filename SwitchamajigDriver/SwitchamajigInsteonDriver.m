@@ -197,7 +197,7 @@
     if (!NSEqualRanges([match range], NSMakeRange(NSNotFound, 0))) {
         NSString *hostname = [httpResponse substringWithRange:[match rangeAtIndex:1]];
         NSLog(@"Hostname is %@\n", hostname);
-        [[self delegate] SwitchamajigDeviceListenerFoundDevice:self hostname:[connection SJHostName] friendlyname:@"Insteon"];
+        [[self delegate] SwitchamajigDeviceListenerFoundDevice:self hostname:hostname friendlyname:@"Insteon"];
     } else {
         NSLog(@"No match");
     }
